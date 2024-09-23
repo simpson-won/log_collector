@@ -34,7 +34,7 @@ def log_monitor(file_name: str):
         with open(file_name, "rt") as fd:
             logger.info(f'log_monitor: success to open file {fd}')
             is_log_trace = True
-            result = trace_log(fd)
+            result = trace_log(fd, logger=logger)
             fd.close()
             return result
     except FileNotFoundError as file_not_found:
