@@ -72,7 +72,6 @@ def stop_func(sig_num, data):
 
 
 if __name__ == "__main__":
-    global run_mode
     mongodb_log_path, run_mode = get_args()
     
     write_pid(file_path="log_collector.pid")
