@@ -1,3 +1,5 @@
+from log import logger
+from lib.mongo_logs import exclude_cmds, exclude_users, exclude_dbs
 
 api_server_url_pre = "http://eimmo-infra-manager.koreacentral.cloudapp.azure.com:8080/mongodb/user/put"
 
@@ -12,9 +14,10 @@ def send_to_api(data, api_url):
         print(f'data = {data}')
         try:
             r = requests.post(api_url, json=data, headers=headers)
-            logging.info(f'send_to_api: result = {r}')
+            logger.info(f'send_to_api: result = {r}')
         except Exception as e:
-            logging.error(f'send_to_api: Exception\n\t\t{e}')
+            logger.error(f'send_to_api: Exception\n\t\t{e}')
+
 
 def send_user_access(date: str, ctx: str, cmd: str, client: str, user: str, db: str):
     data = {'date': date, 'ctx': ctx, 'cmd': cmd, 'client': client, 'user': user, 'db': db}

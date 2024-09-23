@@ -1,15 +1,13 @@
 import time
-import os
-import argparse
-import json
-import sys
 import signal
-import redis
-from config import redis_db, redis_host, redis_port, redis_channel
-from service.redis import reev_from_redis, send_to_redis
-from lib.mongo_logs import check_authenticated, check_command, check_accept_state, check_connection_ended, check_returning_user_from_cache
-
+from lib.signal import sig_init
+from lib.pid import write_pid
 from log import logger
+from lib.log_trace import trace_log
+from service import recv_from_redis, redis_client
+from lib.args import get_args
+
+run_mode = 'publisher'
 
 retry_this = True
 is_log_trace = True
@@ -18,61 +16,14 @@ is_log_trace = True
 retry_count = 0
 
 
-monitoring_lines = {"Connection accepted": check_accept_state,
-                    "Returning user from cache": check_returning_user_from_cache,
-                    "About to run the command": check_command,
-                    "Successfully authenticated": check_authenticated,
-                    "Connection ended": check_connection_ended,
-                    }
-
-
-def data_parse_process(data):
-    if data.startswith('{'):
-        log_dict = json.loads(data)
-        if log_dict["msg"] in monitoring_lines.keys():
-            monitoring_lines.get(log_dict["msg"])(log_dict)
-
-
-def trace_log(log_fd):
+def set_retry_this(value: bool):
     global retry_this
+    retry_this = value
+
+
+def set_retry_count(value: int):
     global retry_count
-    
-    logger.info(f'start follow - {log_fd}')
-    log_fd.seek(0, 2)
-    retry_this = False
-    not_read_cnt = 0
-    while is_log_trace:
-        try:
-            os.stat(log_fd.name)
-            line = log_fd.readline()
-            if not line:
-                if not_read_cnt > 600:
-                    retry_this = True
-                    return False
-                not_read_cnt += 1
-                time.sleep(0.1)
-                continue
-            else:
-                not_read_cnt = 0
-                retry_this = False
-                data_parse_process(data=line)
-        except FileNotFoundError as file_not_found:
-            logger.info('trace_log: FileNotFoundError\n\t\t{file_not_found}')
-            retry_this = True
-            return False
-        except Exception as general_except:
-            logger.info('trace_log: Exception\n\t\t{file_not_found}')
-            retry_this = False
-            return False
-    logger.info(f'end follow - {log_fd}')
-    return True
-
-
-def get_arg_logpath():
-    parser = argparse.ArgumentParser(description='Mongodb Log Monitoring.')
-    parser.add_argument('--filepath', dest='filepath', action='store', default="")
-    args = parser.parse_args()
-    return args.filepath
+    retry_count = value
 
 
 def log_monitor(file_name: str):
@@ -109,36 +60,26 @@ def retry_run(log_path):
             break
 
 
-def sig_handler(sig_num, frame):
+def stop_func(sig_num, data):
     global is_log_trace
     global retry_this
     global retry_count
     
-    if sig_num == signal.SIGUSR1:
-        logger.info('sig_handler: reload_log_trace')
-        is_log_trace = False
-        retry_count = 0
-        retry_this = True
-    if sig_num in [signal.SIGKILL, signal.SIGTERM, signal.SIGSEGV, signal.SIGHUP, signal.SIGABRT]:
-        logger.info(f'sig_handler: {sig_num}')
-        sys.exit()
-
-
-def write_pid():
-    with open("log_collector.pid", "wt") as fd:
-        fd.write(f"{os.getpid()}")
-        fd.close()
+    logger.info(f'stop_func: by sigusr1 [sig_num = {sig_num}, data={data}')
+    is_log_trace = False
+    retry_count = 0
+    retry_this = True
 
 
 if __name__ == "__main__":
-    try:
-        mongodb_log_path = os.environ['MONGO_LOG']
-    except Exception as e:
-        mongodb_log_path = get_arg_logpath()
+    global run_mode
+    mongodb_log_path, run_mode = get_args()
     
-    write_pid()
+    write_pid(file_path="log_collector.pid")
+    sig_init(signals=[(signal.SIGUSR1, stop_func)])
+    logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
+    if run_mode == "publisher":
+        retry_run(log_path=mongodb_log_path)
+    else:
+        recv_from_redis(redis_client)
     
-    signal.signal(signal.SIGUSR1, sig_handler)
-    
-    logger.info(f'main: log_path={mongodb_log_path}')
-    retry_run(log_path=mongodb_log_path)

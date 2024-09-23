@@ -2,8 +2,6 @@ import redis
 from logging import Logger
 from config import redis_host, redis_channel, redis_port, redis_db
 
-redis_client = None
-
 
 def redis_init():
     handle = redis.Redis(host=redis_host, port=redis_port, db=redis_db)
@@ -18,7 +16,7 @@ def send_to_redis(logger: Logger, handle: redis.Redis, data: str):
         logger.error(f"send_to_redis: Exception\n\t\t{e}")
 
 
-def reev_from_redis(logger: Logger, handle: redis.Redis, process):
+def recv_from_redis(logger: Logger, handle: redis.Redis, process):
     try:
         pubsub = handle.pubsub()
         pubsub.subscribe(handle)
