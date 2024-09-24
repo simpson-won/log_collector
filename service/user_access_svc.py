@@ -20,7 +20,7 @@ def select_value(cursor=None, value: UserAccess = None):
 
 def select_user_by_ctx_db_client(cursor=None, ctx="", db="", client=""):
     where_clause = f"ctx=\"{ctx}\" and db=\"{db}\" and client=\"{client}\""
-    order_cluse = "order by id desc"
+    order_clause = "order by id desc"
     
     logger.info(f'select_user_by_ctx_db_client : cursor={cursor} ctx={ctx} db={db} client={client}')
     
@@ -29,7 +29,7 @@ def select_user_by_ctx_db_client(cursor=None, ctx="", db="", client=""):
     else:
         t_cursor = cursor
     
-    values = select_datas(db_handle, cursor=t_cursor, table=table_name, where=where_clause, order=order_cluse)
+    values = select_datas(db_handle, cursor=t_cursor, table=table_name, where=where_clause, order=order_clause)
     
     if cursor is None:
         t_cursor.close()
@@ -43,9 +43,9 @@ def select_user_by_ctx_db_client(cursor=None, ctx="", db="", client=""):
 
 def insert_value(values, cursor=None, auto_commit=True):
     # date, ctx, cmd, client, user, db,
-    logger.info(f'insert_ac_value: values={values}')
+    logger.info(f'insert_ua_value: values={values}')
 
-    if len(values) != 6:
+    if len(values) != 5:
         return
     
     if cursor is None:
@@ -57,7 +57,7 @@ def insert_value(values, cursor=None, auto_commit=True):
 
     ret = select_value(cursor=cursor, value=user_access)
 
-    logger.info(f'insert_ac_value: user_access={user_access}')
+    logger.info(f'insert_ua_value: user_access={user_access}')
     
     if len(ret) == 0:
         insert_data(conn=db_handle, cursor=cursor, table=table_name, value=user_access, auto_commit=auto_commit)

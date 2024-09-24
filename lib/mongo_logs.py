@@ -100,7 +100,7 @@ def check_command(log_dict):
         ctx = log_dict["ctx"]
         logger.info(f'=== {date} ctx = {ctx}, cmd = {cmd}, client = {client}, table = {table}, db = {db}')
         if db not in exclude_dbs:
-            logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
+            logger.info(f'check_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
             insert_uc_value([client, cmd, ctx, date, db, table])
         return
     return
@@ -122,5 +122,3 @@ def data_parse_process(data):
             log_dict = json.loads(str(data))
             if log_dict["msg"] in monitoring_lines.keys():
                 monitoring_lines[log_dict["msg"]](log_dict)
-        else:
-            log.info(f'Illegal data')
