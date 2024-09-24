@@ -7,7 +7,9 @@ def get_args():
     parser = argparse.ArgumentParser(description='Mongodb Log Monitoring.')
     parser.add_argument('--filepath', dest='filepath', action='store', default="/data/log/mongodb.log")
     parser.add_argument('--run-mode', dest='run_mode', action='store', default="publisher")
-    mongodb_log_path, run_mode = parser.parse_args()
+    args = parser.parse_args()
+    mongodb_log_path = args['mongodb_log_path']
+    run_mode = args['run_mode']
 
     try:
         mongodb_log_path_env = os.environ['MONGO_LOG']
