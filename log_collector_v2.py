@@ -29,6 +29,8 @@ def log_monitor(file_name: str):
     global retry_this
     global retry_count
     global is_log_trace
+    from log import logger
+
     try:
         with open(file_name, "rt") as fd:
             logger.info(f'log_monitor: success to open file {fd}')
@@ -80,13 +82,16 @@ if __name__ == "__main__":
 
     from log import set_log_file_name
     
-    logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
     if run_mode == "publisher":
         set_log_file_name("log_collector_v2_pub.log")
+        from log import logger
+        logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         write_pid(file_path="/var/run/log_collector_v2_pub.pid")
         retry_run(log_path=mongodb_log_path)
     else:
         set_log_file_name("log_collector_v2_sub.log")
         write_pid(file_path="/var/run/log_collector_v2_sub.pid")
         from lib.mongo_logs import data_parse_process
+        from log import logger
+        logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         recv_from_redis(logger=logger, handle=redis_client, process=data_parse_process)
