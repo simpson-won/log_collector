@@ -80,6 +80,5 @@ if __name__ == "__main__":
     if run_mode == "publisher":
         retry_run(log_path=mongodb_log_path)
     else:
-        from lib.log_trace import data_parse_process
+        from lib.mongo_logs import data_parse_process
         recv_from_redis(logger=logger, handle=redis_client, process=data_parse_process)
-    
