@@ -27,8 +27,9 @@ def recv_from_redis(logger: Logger, handle: redis.Redis, process):
         while True:
             res = pubsub.get_message()
             if res is not None:
-                print(res)
-                process(data=res)
+                print(f'recv_from_redis: res = {res}')
+                print(f'recv_from_redis: data = {res["data"]}')
+                process(data=res['data'])
             else:
                 time.sleep(0.1)
     except Exception as e:
