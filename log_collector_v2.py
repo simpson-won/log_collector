@@ -82,3 +82,4 @@ if __name__ == "__main__":
     else:
         from lib.mongo_logs import data_parse_process
         recv_from_redis(logger=logger, handle=redis_client, process=data_parse_process)
+        redis_client.close()

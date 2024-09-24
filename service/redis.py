@@ -31,5 +31,8 @@ def recv_from_redis(logger: Logger, handle: redis.Redis, process):
                 process(data=res['data'])
             else:
                 time.sleep(0.1)
+    except KeyboardInterrupt as keyInt:
+        logger.info(f"recv_from_redis: User are requested to stop.")
+        return
     except Exception as e:
         logger.info(f"recv_from_redis: Exception\n\t\t{e}")
