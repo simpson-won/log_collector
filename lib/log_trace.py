@@ -1,25 +1,11 @@
 import os
 import time
-import json
 from logging import Logger
 
-from lib.mongo_logs import check_authenticated, check_command, check_accept_state, check_connection_ended, check_returning_user_from_cache
 from service import redis_client, send_to_redis
 
 
-monitoring_lines = {"Connection accepted": check_accept_state,
-                    "Returning user from cache": check_returning_user_from_cache,
-                    "About to run the command": check_command,
-                    "Successfully authenticated": check_authenticated,
-                    "Connection ended": check_connection_ended,
-                    }
-
-
-def data_parse_process(data):
-    if data.startswith('{'):
-        log_dict = json.loads(data)
-        if log_dict["msg"] in monitoring_lines.keys():
-            monitoring_lines.get(log_dict["msg"])(log_dict)
+# from lib.mongo_logs import data_parse_process
 
 
 def trace_log(log_fd, logger: Logger):
@@ -42,7 +28,7 @@ def trace_log(log_fd, logger: Logger):
             else:
                 not_read_cnt = 0
                 set_retry_this(False)
-                #data_parse_process(data=line)
+                # data_parse_process(data=line)
                 send_to_redis(logger, redis_client, line)
         except FileNotFoundError as file_not_found:
             logger.info(f'trace_log: FileNotFoundError\n\t\t{file_not_found}')

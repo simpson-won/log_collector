@@ -1,4 +1,5 @@
 from log import logger
+import json
 from service.backend_api import send_user_access, send_user_command
 
 
@@ -111,3 +112,19 @@ def check_command(log_dict):
             if user is None or (user is not None and (user not in exclude_users)):
                 logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, user={user}, db={db}')
                 # send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
+
+
+monitoring_lines = {"Connection accepted": check_accept_state,
+                    "Returning user from cache": check_returning_user_from_cache,
+                    "About to run the command": check_command,
+                    "Successfully authenticated": check_authenticated,
+                    "Connection ended": check_connection_ended,
+                    }
+
+
+def data_parse_process(data):
+    if type(data) is str:
+        if data.startswith('{'):
+            log_dict = json.loads(data)
+            if log_dict["msg"] in monitoring_lines.keys():
+                monitoring_lines.get(log_dict["msg"])(log_dict)
