@@ -84,7 +84,6 @@ def send_data(data, api_url):
     if date.endswith('Z'):
         date = date.replace('Z', '')
         data['date'] = date
-        print(f'data = {data}')
         try:
             r = requests.post(api_url, json=data, headers=headers)
             logging.info(f'send_data: result = {r}')

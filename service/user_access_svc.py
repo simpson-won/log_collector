@@ -1,5 +1,6 @@
 from model.user_access import UserAccess, table_name
 from service import db_handle, select_datas, insert_data
+from log import logger
 
 
 def select_value(cursor=None, value: UserAccess = None):
@@ -20,8 +21,8 @@ def select_value(cursor=None, value: UserAccess = None):
 def select_user_by_ctx_db_client(cursor=None, ctx="", db="", client=""):
     where_clause = f"ctx=\"{ctx}\" and db=\"{db}\" and client=\"{client}\""
     order_cluse = "order by id desc"
-    # limit_clause = "limit 1"
-    print(f'select_user_by_ctx_db_client : cursor={cursor} ctx={ctx} db={db} client={client}')
+    
+    logger.info(f'select_user_by_ctx_db_client : cursor={cursor} ctx={ctx} db={db} client={client}')
     
     if cursor is None:
         t_cursor = db_handle.cursor()
@@ -33,7 +34,7 @@ def select_user_by_ctx_db_client(cursor=None, ctx="", db="", client=""):
     if cursor is None:
         t_cursor.close()
 
-    print(f'select_user_by_ctx_db_client: values={values}, {len(values)}')
+    logger.info(f'select_user_by_ctx_db_client: values={values}, {len(values)}')
 
     if len(values) > 0 and len(values[0])==6:
         return values[0][5]
@@ -42,8 +43,7 @@ def select_user_by_ctx_db_client(cursor=None, ctx="", db="", client=""):
 
 def insert_value(values, cursor=None, auto_commit=True):
     # date, ctx, cmd, client, user, db,
-
-    print(f'insert_ac_value: values={values}')
+    logger.info(f'insert_ac_value: values={values}')
 
     if len(values) != 6:
         return
@@ -57,7 +57,7 @@ def insert_value(values, cursor=None, auto_commit=True):
 
     ret = select_value(cursor=cursor, value=user_access)
 
-    print(f'insert_ac_value: user_access={user_access}')
+    logger.info(f'insert_ac_value: user_access={user_access}')
     
     if len(ret) == 0:
         insert_data(conn=db_handle, cursor=cursor, table=table_name, value=user_access, auto_commit=auto_commit)

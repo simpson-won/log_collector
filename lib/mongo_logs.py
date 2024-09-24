@@ -1,6 +1,5 @@
 from log import logger
 import json
-from service.backend_api import send_user_access, send_user_command
 from service.user_access_svc import insert_value as insert_ua_value
 from service.user_cmds_svc import insert_value as insert_uc_value
 
@@ -76,8 +75,6 @@ def check_authenticated(log_dict):
     ctx = log_dict["ctx"]
     logger.info(f'check_authenticated: {date} ctx = {ctx}, cmd = AUTH, client = {client}, user = {user}, db = {db}')
     insert_ua_value([client, ctx, date, db, user])
-    # client="", ctx="", date=datetime.now(), db="", user=""
-    # send_user_access(date=date, ctx=ctx, cmd="AUTH", client=client, user=user, db=db)
 
 
 def check_connection_ended(log_dict):
@@ -96,36 +93,17 @@ def check_command(log_dict):
     cmd_keys = list(cmd_info.keys())
     cmd = cmd_keys[0]
     client = log_dict["attr"]["client"]
-    #print(f'check_command: -- 0')
-    #print(f'check_command: -- 0 cmd={cmd}, client={client}')
     if cmd not in exclude_cmds and len(client) > 0:
-        print(f'check_command: -- 0 cmd={cmd}, client={client}')
-        print(f'check_command: -- 1')
         table = cmd_info.get(cmd)
         db = log_dict["attr"]["db"]
         date = log_dict["t"]["$date"]
         ctx = log_dict["ctx"]
         logger.info(f'=== {date} ctx = {ctx}, cmd = {cmd}, client = {client}, table = {table}, db = {db}')
         if db not in exclude_dbs:
-            # send_user_command(date=date, ctx=ctx, cmd=cmd, client=client, table_name=table, db=db)
-            # client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user=""
             logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
             insert_uc_value([client, cmd, ctx, date, db, table])
         return
     return
-    print(f'check_command: -- 0 cmd_info.keys={cmd_info.keys}')
-    if "speculativeAuthenticate" in cmd_info.keys:
-        print(f'check_command: -- 2')
-        auth_info = cmd_info['speculativeAuthenticate']
-        db = auth_info['db']
-        user = "userdb.won@aimmo.co.kr".replace(db + ".", "")
-        ctx = log_dict["ctx"]
-        date = log_dict["t"]["$date"]
-        if db not in exclude_dbs:
-            if user is None or (user is not None and (user not in exclude_users)):
-                logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, user={user}, db={db}')
-                insert_uc_value([client, cmd, ctx, date, db, ""])
-                # send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
 
 
 monitoring_lines = {"Connection accepted": check_accept_state,

@@ -1,4 +1,5 @@
 import pymysql
+from log import logger
 
 charset = 'utf8'
 
@@ -11,7 +12,7 @@ def db_init(db_host: str, db_user: str, db_passwd: str, db_db: str, db_port: int
 
 # close connection
 def db_fint(conn):
-    if conn != None:
+    if conn is not None:
         conn.close()
 
 
@@ -23,7 +24,9 @@ args:
   query = input query
     ex ) query : "select * from finance.stock_list;"
 """
-def select_datas(conn, cursor=None, table: str="", where: str = None, order: str = None) -> []:
+
+
+def select_datas(conn, cursor=None, table: str = "", where: str = None, order: str = None) -> []:
     if cursor == None:
         cur = conn.cursor()
     else:
@@ -32,15 +35,15 @@ def select_datas(conn, cursor=None, table: str="", where: str = None, order: str
     query = f'select * from {table}'
     if where is not None and len(where) > 6:
         query = query + f' where {where}'
-
+    
     if order is not None and len(order) > 8:
         query = query + " " + order
-    print(f'select_datas: query={query}')
+    logger.info(f'select_datas: query={query}')
     cur.execute(query)
     rows = cur.fetchall()
     for row in rows:
         datas.append(row)
-    print(f'select_datas: rows={rows}')
+    logger.info(f'select_datas: rows={rows}')
     return datas
 
 
@@ -52,14 +55,16 @@ args:
   table = string, table name
   values = string, values
 """
+
+
 def insert_datas(conn, cursor=None, table="", values=None, auto_commit=True):
-    if cursor == None:
+    if cursor is None:
         cur = conn.cursor()
     else:
         cur = cursor
     for value in values:
         query = f'insert ignore into {table} values({str(value)})'
-        #print(f'query={query}')
+        # logger.info(f'query={query}')
         cur.execute(query)
     if auto_commit:
         conn.commit()
@@ -67,14 +72,14 @@ def insert_datas(conn, cursor=None, table="", values=None, auto_commit=True):
 
 def insert_data(conn, cursor=None, table="", value=None, auto_commit=True):
     try:
-        if cursor == None:
+        if cursor is None:
             cur = conn.cursor()
         else:
             cur = cursor
         query = f'insert ignore into {table} values({str(value)})'
-        #print(f'query={query}')
+        # logger.info(f'query={query}')
         cur.execute(query)
         if auto_commit:
             conn.commit()
     except Exception as e:
-        print(e)
+        logger.info(f'insert_data: {e}')

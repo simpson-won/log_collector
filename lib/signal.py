@@ -4,7 +4,15 @@ import sys
 
 
 def default_exit(sig_num, data):
-    logger.info(f'sig_handler: {sig_num}, {data}')
+    from log_collector_v2 import run_mode
+    import time
+    if run_mode != "publisher":
+        from lib.mysql import db_fint
+        from service import db_handle
+        if db_handle is not None:
+            db_fint(db_handle)
+    time.sleep(10)
+    logger.info(f'default_exit: {sig_num}, {data}')
     sys.exit()
 
 
