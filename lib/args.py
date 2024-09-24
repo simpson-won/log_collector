@@ -8,8 +8,9 @@ def get_args():
     parser.add_argument('--filepath', dest='filepath', action='store', default="/data/log/mongodb.log")
     parser.add_argument('--run-mode', dest='run_mode', action='store', default="publisher")
     args = parser.parse_args()
-    mongodb_log_path = args['mongodb_log_path']
-    run_mode = args['run_mode']
+    
+    mongodb_log_path = args.filepath
+    run_mode = args.run_mode
 
     try:
         mongodb_log_path_env = os.environ['MONGO_LOG']
