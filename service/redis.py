@@ -22,14 +22,14 @@ def send_to_redis(logger: Logger, handle: redis.Redis, data: str):
 def recv_from_redis(logger: Logger, handle: redis.Redis, process):
     pubsub = handle.pubsub()
     pubsub.subscribe(config.redis_channel)
-
-    while True:
-        res = pubsub.get_message()
-        if res is not None:
-            print(f'recv_from_redis: res = {res}')
-            print(f'recv_from_redis: data = {res["data"]}')
-            process(data=res['data'])
-        else:
-            time.sleep(0.1)
-    # except Exception as e:
-    #    logger.info(f"recv_from_redis: Exception\n\t\t{e}")
+    try:
+        while True:
+            res = pubsub.get_message()
+            if res is not None:
+                #print(f'recv_from_redis: res = {res}')
+                #print(f'recv_from_redis: data = {res["data"]}')
+                process(data=res['data'])
+            else:
+                time.sleep(0.1)
+    except Exception as e:
+        logger.info(f"recv_from_redis: Exception\n\t\t{e}")
