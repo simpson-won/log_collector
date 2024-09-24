@@ -2,7 +2,6 @@ import time
 import signal
 from lib.signal import sig_init
 from lib.pid import write_pid
-from log import logger
 from lib.log_trace import trace_log
 from service import recv_from_redis, redis_client
 from lib.args import get_args
@@ -48,6 +47,8 @@ def log_monitor(file_name: str):
 def retry_run(log_path):
     global retry_count
     global retry_this
+
+    from log import logger
     
     while retry_this:
         log_monitor(file_name=log_path)
@@ -61,6 +62,7 @@ def retry_run(log_path):
 
 
 def stop_func(sig_num, data):
+    from log import logger
     global is_log_trace
     global retry_this
     global retry_count
@@ -75,11 +77,16 @@ if __name__ == "__main__":
     mongodb_log_path, run_mode = get_args()
     
     sig_init(signals=[(signal.SIGUSR1, stop_func)])
+
+    from log import set_log_file_name
+    
     logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
     if run_mode == "publisher":
+        set_log_file_name("log_collector_v2_pub.log")
         write_pid(file_path="/var/run/log_collector_v2_pub.pid")
         retry_run(log_path=mongodb_log_path)
     else:
+        set_log_file_name("log_collector_v2_sub.log")
         write_pid(file_path="/var/run/log_collector_v2_sub.pid")
         from lib.mongo_logs import data_parse_process
         recv_from_redis(logger=logger, handle=redis_client, process=data_parse_process)
