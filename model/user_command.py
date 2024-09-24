@@ -67,8 +67,8 @@ class UserCommand:
         else:
             return False
 
-    @classmethod
-    def create(cls, client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user=""):
+    @staticmethod
+    def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user=""):
         return UserCommand(
             date=updated,
             ctx=ctx,

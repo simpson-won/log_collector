@@ -1,6 +1,8 @@
 from log import logger
 import json
 from service.backend_api import send_user_access, send_user_command
+from service.user_access_svc import insert_value as insert_ua_value
+from service.user_cmds_svc import insert_value as insert_uc_value
 
 
 ignore_lines = ["No drop-pending idents have expired",
@@ -73,6 +75,8 @@ def check_authenticated(log_dict):
     db = log_dict["attr"]["db"]
     ctx = log_dict["ctx"]
     logger.info(f'check_authenticated: {date} ctx = {ctx}, cmd = AUTH, client = {client}, user = {user}, db = {db}')
+    insert_ua_value([client, ctx, date, db, user])
+    # client="", ctx="", date=datetime.now(), db="", user=""
     # send_user_access(date=date, ctx=ctx, cmd="AUTH", client=client, user=user, db=db)
 
 
@@ -100,7 +104,9 @@ def check_command(log_dict):
         logger.info(f'=== {date} ctx = {ctx}, cmd = {cmd}, client = {client}, table = {table}, db = {db}')
         if db not in exclude_dbs:
             # send_user_command(date=date, ctx=ctx, cmd=cmd, client=client, table_name=table, db=db)
+            # client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user=""
             logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
+            insert_uc_value([client, cmd, ctx, date, db, table])
         return
     if "speculativeAuthenticate" in cmd_info.keys:
         auth_info = cmd_info['speculativeAuthenticate']
@@ -111,6 +117,7 @@ def check_command(log_dict):
         if db not in exclude_dbs:
             if user is None or (user is not None and (user not in exclude_users)):
                 logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, user={user}, db={db}')
+                insert_uc_value([client, cmd, ctx, date, db, ""])
                 # send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
 
 

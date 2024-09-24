@@ -56,12 +56,13 @@ class UserAccess:
         else:
             False
     
-    @classmethod
-    def create(cls, client="", ctx="", updated=datetime.now(), db="", user=""):
+    @staticmethod
+    def create(client="", ctx="", date=datetime.now(), db="", user=""):
+        # date, ctx, cmd, client, user, db,
         return UserAccess(
             client=client,
             ctx=ctx,
-            date=updated,
+            date=date,
             db=db,
             user=user
         )

@@ -1,10 +1,10 @@
 import pymysql
 
-charset="utf8"
+charset = 'utf8'
 
 
 # db connect
-def db_init(db_host: str, db_user: str, db_passwd: str, db_db: str):
+def db_init(db_host: str, db_user: str, db_passwd: str, db_db: str, db_port: int = 3306):
     conn = pymysql.connect(host=db_host, user=db_user, password=db_passwd, db=db_db, charset=charset)
     return conn
 

@@ -26,13 +26,13 @@ def recv_from_redis(logger: Logger, handle: redis.Redis, process):
         while True:
             res = pubsub.get_message()
             if res is not None:
-                #print(f'recv_from_redis: res = {res}')
-                #print(f'recv_from_redis: data = {res["data"]}')
                 process(data=res['data'])
             else:
                 time.sleep(0.1)
-    except KeyboardInterrupt as keyInt:
-        logger.info(f"recv_from_redis: User are requested to stop.")
+    except KeyboardInterrupt:
+        logger.info("recv_from_redis: User are requested to stop.")
+        handle.close()
         return
     except Exception as e:
         logger.info(f"recv_from_redis: Exception\n\t\t{e}")
+    handle.close()
