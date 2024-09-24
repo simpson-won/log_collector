@@ -1,4 +1,5 @@
 import redis
+import time
 from logging import Logger
 
 import config
@@ -22,7 +23,13 @@ def recv_from_redis(logger: Logger, handle: redis.Redis, process):
     try:
         pubsub = handle.pubsub()
         pubsub.subscribe(config.redis_channel)
-        for data in pubsub.listen():
-            process(data=data)
+
+        while True:
+            res = pubsub.get_message()
+            if res is not None:
+                print(res)
+                process(data=res)
+            else:
+                time.sleep(0.1)
     except Exception as e:
         logger.info(f"recv_from_redis: Exception\n\t\t{e}")
