@@ -45,11 +45,11 @@ def trace_log(log_fd, logger: Logger):
                 #data_parse_process(data=line)
                 send_to_redis(logger, redis_client, line)
         except FileNotFoundError as file_not_found:
-            logger.info('trace_log: FileNotFoundError\n\t\t{file_not_found}')
+            logger.info(f'trace_log: FileNotFoundError\n\t\t{file_not_found}')
             set_retry_this(True)
             return False
         except Exception as general_except:
-            logger.info('trace_log: Exception\n\t\t{file_not_found}')
+            logger.info(f'trace_log: Exception\n\t\t{general_except}')
             set_retry_this(False)
             return False
     logger.info(f'end follow - {log_fd}')
