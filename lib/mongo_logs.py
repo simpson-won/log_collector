@@ -72,7 +72,7 @@ def check_authenticated(log_dict):
     db = log_dict["attr"]["db"]
     ctx = log_dict["ctx"]
     logger.info(f'check_authenticated: {date} ctx = {ctx}, cmd = AUTH, client = {client}, user = {user}, db = {db}')
-    send_user_access(date=date, ctx=ctx, cmd="AUTH", client=client, user=user, db=db)
+    # send_user_access(date=date, ctx=ctx, cmd="AUTH", client=client, user=user, db=db)
 
 
 def check_connection_ended(log_dict):
@@ -98,7 +98,8 @@ def check_command(log_dict):
         ctx = log_dict["ctx"]
         logger.info(f'=== {date} ctx = {ctx}, cmd = {cmd}, client = {client}, table = {table}, db = {db}')
         if db not in exclude_dbs:
-            send_user_command(date=date, ctx=ctx, cmd=cmd, client=client, table_name=table, db=db)
+            # send_user_command(date=date, ctx=ctx, cmd=cmd, client=client, table_name=table, db=db)
+            logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
         return
     if "speculativeAuthenticate" in cmd_info.keys:
         auth_info = cmd_info['speculativeAuthenticate']
@@ -108,4 +109,5 @@ def check_command(log_dict):
         date = log_dict["t"]["$date"]
         if db not in exclude_dbs:
             if user is None or (user is not None and (user not in exclude_users)):
-                send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
+                logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, user={user}, db={db}')
+                # send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
