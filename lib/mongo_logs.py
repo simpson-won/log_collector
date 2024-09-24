@@ -97,7 +97,8 @@ def check_command(log_dict):
         date = log_dict["t"]["$date"]
         ctx = log_dict["ctx"]
         logger.info(f'=== {date} ctx = {ctx}, cmd = {cmd}, client = {client}, table = {table}, db = {db}')
-        send_user_command(date=date, ctx=ctx, cmd=cmd, client=client, table_name=table, db=db)
+        if db not in exclude_dbs:
+            send_user_command(date=date, ctx=ctx, cmd=cmd, client=client, table_name=table, db=db)
         return
     if "speculativeAuthenticate" in cmd_info.keys:
         auth_info = cmd_info['speculativeAuthenticate']
@@ -105,4 +106,6 @@ def check_command(log_dict):
         user = "userdb.won@aimmo.co.kr".replace(db + ".", "")
         ctx = log_dict["ctx"]
         date = log_dict["t"]["$date"]
-        send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
+        if db not in exclude_dbs:
+            if user is None or (user is not None and (user not in exclude_users)):
+                send_user_access(date=date, ctx=ctx, cmd=cmd, client=client, user=user, db=db)
