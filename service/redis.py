@@ -27,6 +27,7 @@ def recv_from_redis(logger: Logger, handle: redis.Redis, process):
             res = pubsub.get_message()
             if res is not None:
                 process(data=res['data'])
+                #print(f'recv_from_redis: {res["data"]}')
             else:
                 time.sleep(0.1)
     except KeyboardInterrupt:

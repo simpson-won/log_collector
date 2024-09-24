@@ -23,7 +23,7 @@ args:
   query = input query
     ex ) query : "select * from finance.stock_list;"
 """
-def select_datas(conn, cursor=None, table: str="", where: str = None) -> []:
+def select_datas(conn, cursor=None, table: str="", where: str = None, order: str = None) -> []:
     if cursor == None:
         cur = conn.cursor()
     else:
@@ -32,11 +32,15 @@ def select_datas(conn, cursor=None, table: str="", where: str = None) -> []:
     query = f'select * from {table}'
     if where is not None and len(where) > 6:
         query = query + f' where {where}'
-    #print(f'query={query}')
+
+    if order is not None and len(order) > 8:
+        query = query + " " + order
+    print(f'select_datas: query={query}')
     cur.execute(query)
     rows = cur.fetchall()
     for row in rows:
         datas.append(row)
+    print(f'select_datas: rows={rows}')
     return datas
 
 

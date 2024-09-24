@@ -96,7 +96,11 @@ def check_command(log_dict):
     cmd_keys = list(cmd_info.keys())
     cmd = cmd_keys[0]
     client = log_dict["attr"]["client"]
+    #print(f'check_command: -- 0')
+    #print(f'check_command: -- 0 cmd={cmd}, client={client}')
     if cmd not in exclude_cmds and len(client) > 0:
+        print(f'check_command: -- 0 cmd={cmd}, client={client}')
+        print(f'check_command: -- 1')
         table = cmd_info.get(cmd)
         db = log_dict["attr"]["db"]
         date = log_dict["t"]["$date"]
@@ -108,7 +112,10 @@ def check_command(log_dict):
             logger.info(f'scheck_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
             insert_uc_value([client, cmd, ctx, date, db, table])
         return
+    return
+    print(f'check_command: -- 0 cmd_info.keys={cmd_info.keys}')
     if "speculativeAuthenticate" in cmd_info.keys:
+        print(f'check_command: -- 2')
         auth_info = cmd_info['speculativeAuthenticate']
         db = auth_info['db']
         user = "userdb.won@aimmo.co.kr".replace(db + ".", "")
@@ -130,8 +137,12 @@ monitoring_lines = {"Connection accepted": check_accept_state,
 
 
 def data_parse_process(data):
-    if type(data) is str:
+    if type(data) in [str, bytes]:
+        if type(data) == bytes:
+            data = data.decode('utf-8')
         if data.startswith('{'):
-            log_dict = json.loads(data)
+            log_dict = json.loads(str(data))
             if log_dict["msg"] in monitoring_lines.keys():
-                monitoring_lines.get(log_dict["msg"])(log_dict)
+                monitoring_lines[log_dict["msg"]](log_dict)
+        else:
+            log.info(f'Illegal data')

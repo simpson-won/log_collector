@@ -20,7 +20,8 @@ def select_market_value(cursor=None, value: UserCommand = None):
 
 def insert_value(values: list, cursor=None, auto_commit=True):
     # date, ctx, cmd, client, user, db,
-    if len(values) is not 6:
+    print(f'insert_ac_value: values = {values}, cursor={cursor} auto_commit={auto_commit}')
+    if len(values) != 6:
         return
     
     if cursor is None:
@@ -29,15 +30,19 @@ def insert_value(values: list, cursor=None, auto_commit=True):
         t_cursor = cursor
     
     # [client, cmd, ctx, date, db, table]
+    print(f'insert_ac_value: cursor={cursor}')
     user = select_user_by_ctx_db_client(cursor=t_cursor, client=values[0], db=values[4], ctx=values[2])
+    print(f'insert_ac_value:  user_access={user}, {type(user)}')
     values.append(user)
 
-    user_access = UserCommand.create(*values)
+    user_cmd = UserCommand.create(*values)
+    print(f'insert_ac_value: user_cmd={user_cmd}')
 
-    ret = select_market_value(cursor=t_cursor, value=user_access)
+    ret = select_market_value(cursor=t_cursor, value=user_cmd)
     
     if len(ret) == 0:
-        insert_data(conn=db_handle, cursor=t_cursor, table=table_name, value=user_access, auto_commit=auto_commit)
+        print(f'insert_ac_value: ret={ret}')
+        insert_data(conn=db_handle, cursor=t_cursor, table=table_name, value=user_cmd, auto_commit=auto_commit)
     
     if cursor is None:
         t_cursor.close()
