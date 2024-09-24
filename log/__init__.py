@@ -11,5 +11,6 @@ def set_log_file_name(file_name):
     log_file_name = file_name
 
 
-logging.basicConfig(stream=sys.stdout, filemode="a", format=log_format, level=logging.INFO, filename=log_file_name)
+logging.basicConfig(stream=sys.stdout, filemode="a", format=log_format, level=logging.INFO)
+logging.FileHandler(log_file_name, 'a')
 logger = logging.getLogger()
