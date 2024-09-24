@@ -3,7 +3,6 @@ from datetime import time
 import json
 from logging import Logger
 
-from log_collector_v2 import is_log_trace, set_retry_count, set_retry_this
 from lib.mongo_logs import check_authenticated, check_command, check_accept_state, check_connection_ended, check_returning_user_from_cache
 from service import redis_client, send_to_redis
 
@@ -26,6 +25,7 @@ def data_parse_process(data):
 def trace_log(log_fd, logger: Logger):
     logger.info(f'start follow - {log_fd}')
     log_fd.seek(0, 2)
+    from log_collector_v2 import is_log_trace, set_retry_count, set_retry_this
     set_retry_this(False)
     not_read_cnt = 0
     while is_log_trace:
