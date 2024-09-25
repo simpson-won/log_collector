@@ -73,16 +73,16 @@ def stop_func(sig_num, data):
 
 
 if __name__ == "__main__":
-    mongodb_log_path, run_mode = get_args()
+    mongodb_log_path, run_mode, pid = get_args()
 
     sig_init(signals=[(signal.SIGUSR1, stop_func)])
 
     if run_mode == "publisher":
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
-        write_pid(file_path="/var/run/log_collector_v2_pub.pid")
+        write_pid(file_path=f"/var/run/log_collector_v2_pub_{pid}.pid")
         retry_run(log_path=mongodb_log_path)
     else:
         from lib.mongo_logs import data_parse_process
-        write_pid(file_path="/var/run/log_collector_v2_sub.pid")
+        write_pid(file_path=f"/var/run/log_collector_v2_sub_{pid}.pid")
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         queue_pop(logger=logger, handle=redis_client, process=data_parse_process)

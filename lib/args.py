@@ -9,10 +9,13 @@ def get_args():
                         action='store', default="/data/log/mongod.log")
     parser.add_argument('--run-mode', dest='run_mode',
                         action='store', default="publisher")
+    parser.add_argument('--pid', dest='pid', type=int,
+                        action='store', default=1)
     args = parser.parse_args()
     
     mongodb_log_path = args.filepath
     run_mode = args.run_mode
+    pid = args.pid
 
     try:
         mongodb_log_path_env = os.environ['MONGO_LOG']
@@ -30,4 +33,4 @@ def get_args():
     if mongodb_log_path_env is not None:
         mongodb_log_path = mongodb_log_path_env
         
-    return mongodb_log_path, run_mode
+    return mongodb_log_path, run_mode, pid
