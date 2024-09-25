@@ -41,10 +41,10 @@ class UserAccess:
     
     def where_all(self):
         return f'date=\"{self.date}\" and ' \
-            + 'ctx=\"{self.ctx}\" and ' \
-            + 'user=\"{self.user}\" and ' \
-            + 'client=\"{self.client}\" and ' \
-            + 'db=\"{self.db}\"'
+            + f'ctx=\"{self.ctx}\" and ' \
+            + f'user=\"{self.user}\" and ' \
+            + f'client=\"{self.client}\" and ' \
+            + f'db=\"{self.db}\"'
     
     def __str__(self) -> str:
         return f'\"{self.id}\", \"{self.client}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.user}\"'

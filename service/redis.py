@@ -28,13 +28,14 @@ def queue_push(logger: Logger, handle: redis.Redis, data: str):
 
 def queue_pop(logger: Logger, handle: redis.Redis, process):
     try:
-        while True:
-            res = handle.rpop(redis_channel)
-            if res is not None:
-                logger.info(f'queue_pop: res = {res}')
-                process(data=res)
-            else:
-                time.sleep(0.01)
+        logger.info(f"queue_pop: --")
+        _, res = handle.brpop(redis_channel)
+        while res:
+            # logger.info(f"queue_pop: res = {len(res)}")
+            # logger.info(f"queue_pop: res = {type(res)}")
+            # logger.info(f'queue_pop: res = {res[0]}')
+            process(data=res)
+            _, res = handle.brpop(redis_channel)
     except KeyboardInterrupt:
         logger.info("recv_from_redis: User are requested to stop.")
         handle.close()
@@ -53,8 +54,8 @@ def recv_from_redis(logger: Logger, handle: redis.Redis, process):
             # logger.info(f"recv_from_redis: res={res}")
             if res is not None:
                 process(data=res['data'])
-            else:
-                time.sleep(0.01)
+            #else:
+            #    time.sleep(0.01)
     except KeyboardInterrupt:
         logger.info("recv_from_redis: User are requested to stop.")
         handle.close()

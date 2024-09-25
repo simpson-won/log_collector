@@ -3,7 +3,7 @@ import time
 import json
 from logging import Logger
 
-from service import redis_client, send_to_redis
+from service import redis_client, send_to_redis, queue_push
 
 
 # from lib.mongo_logs import data_parse_process
@@ -11,6 +11,8 @@ from service import redis_client, send_to_redis
 line_cmd = '\"c\":\"COMMAND\"'
 line_auth = '\"c\":\"ACCESS\"'
 line_ex_msg1 = 'Slow'
+line_auth_detail1="Authentication succeeded"
+line_auth_detail2="Successfully authenticated"
 
 
 def trace_log(log_fd, logger: Logger):
@@ -33,12 +35,12 @@ def trace_log(log_fd, logger: Logger):
             else:
                 not_read_cnt = 0
                 set_retry_this(False)
-                # data_parse_process(data=line)
-                if (line_cmd  in line) or (line_auth in line):
+                if line_cmd  in line:
                     if line_ex_msg1 not in line and 'Applying default' not in line:
-                        send_to_redis(logger, redis_client, line)
-                #    if log_dict["msg"] in monitoring_lines.keys():
-                #        monitoring_lines[log_dict["msg"]](log_dict)
+                        queue_push(logger, redis_client, line)
+                elif line_auth in line:
+                    if line_auth_detail1 in line or line_auth_detail2 in line:
+                        queue_push(logger, redis_client, line)
         except FileNotFoundError as file_not_found:
             logger.info(f'trace_log: FileNotFoundError\n\t\t{file_not_found}')
             set_retry_this(True)

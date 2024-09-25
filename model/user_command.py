@@ -50,12 +50,12 @@ class UserCommand:
     
     def where_all(self):
         return f'date=\"{self.date}\" and ' \
-            + 'ctx=\"{self.ctx}\" and ' \
-            + 'cmd=\"{self.cmd}\" and ' \
-            + 'user=\"{self.user}\" and ' \
-            + 'client=\"{self.client}\" and ' \
-            + 'db=\"{self.db}\" and ' \
-            + 'table_name=\"{self.table_name}\"'
+            + f'ctx=\"{self.ctx}\" and ' \
+            + f'cmd=\"{self.cmd}\" and ' \
+            + f'user=\"{self.user}\" and ' \
+            + f'client=\"{self.client}\" and ' \
+            + f'db=\"{self.db}\" and ' \
+            + f'table_name=\"{self.table_name}\"'
     
     def __str__(self) -> str:
         return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\"'

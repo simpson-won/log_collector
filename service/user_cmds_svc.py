@@ -1,7 +1,7 @@
 from model.user_command import UserCommand, table_name
 from service import db_handle, select_datas, insert_data
 from service.user_access_svc import select_user_by_ctx_db_client
-#from log import logger
+# from log import logger
 
 
 def select_value(cursor=None, value: UserCommand = None):
@@ -37,11 +37,12 @@ def insert_value(values: list, cursor=None, auto_commit=True):
 
     user_cmd = UserCommand.create(*values)
 
-    ret = select_value(cursor=t_cursor, value=user_cmd)
+    # ret = select_value(cursor=t_cursor, value=user_cmd)
     
-    if len(ret) == 0:
-        insert_data(conn=db_handle, cursor=t_cursor, table=table_name, value=user_cmd, auto_commit=auto_commit)
+    # if len(ret) == 0:
+    insert_data(conn=db_handle, cursor=t_cursor, table=table_name, value=user_cmd, auto_commit=auto_commit)
     
     if cursor is None:
         t_cursor.close()
+    # logger.info(f'insert_ac_value:  completed')
 

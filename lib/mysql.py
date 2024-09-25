@@ -4,6 +4,9 @@ from log import logger
 charset = 'utf8'
 
 
+data_count = 0
+
+
 # db connect
 def db_init(db_host: str, db_user: str, db_passwd: str, db_db: str, db_port: int = 3306):
     conn = pymysql.connect(host=db_host, user=db_user, password=db_passwd, db=db_db, charset=charset)
@@ -71,6 +74,7 @@ def insert_datas(conn, cursor=None, table="", values=None, auto_commit=True):
 
 
 def insert_data(conn, cursor=None, table="", value=None, auto_commit=True):
+    global data_count
     try:
         if cursor is None:
             cur = conn.cursor()
@@ -79,7 +83,11 @@ def insert_data(conn, cursor=None, table="", value=None, auto_commit=True):
         query = f'insert ignore into {table} values({str(value)})'
         # logger.info(f'query={query}')
         cur.execute(query)
-        if auto_commit:
+        if auto_commit and data_count > 1:
             conn.commit()
+            data_count = 0
+        else:
+            data_count += 1
+
     except Exception as e:
         logger.info(f'insert_data: {e}')
