@@ -44,12 +44,12 @@ def insert_value(values, cursor=None, auto_commit=True):
     else:
         t_cursor = cursor
     user_access = UserAccess.create(*values)
-    ret = select_value(cursor=t_cursor, value=user_access)
-    if len(ret) == 0:
-        insert_data(conn=db_handle,
-                    cursor=t_cursor,
-                    table=table_name,
-                    value=user_access,
-                    auto_commit=auto_commit)
+    # ret = select_value(cursor=t_cursor, value=user_access)
+    # if len(ret) == 0:
+    insert_data(conn=db_handle,
+                cursor=t_cursor,
+                table=table_name,
+                value=user_access,
+                auto_commit=auto_commit)
     if cursor is None:
         t_cursor.close()
