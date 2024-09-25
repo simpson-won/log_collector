@@ -3,7 +3,8 @@ import signal
 from lib.signal import sig_init
 from lib.pid import write_pid
 from lib.log_trace import trace_log
-from service import recv_from_redis, redis_client, queue_pop
+from service import redis_client
+from service.redis_svc import queue_pop
 from lib.args import get_args
 from log import logger
 
@@ -65,7 +66,6 @@ def stop_func(sig_num, data):
     global is_log_trace
     global retry_this
     global retry_count
-    
     logger.info(f'stop_func: by sigusr1 [sig_num = {sig_num}, data={data}')
     is_log_trace = False
     retry_count = 0
@@ -85,6 +85,4 @@ if __name__ == "__main__":
         from lib.mongo_logs import data_parse_process
         write_pid(file_path="/var/run/log_collector_v2_sub.pid")
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
-        # recv_from_redis(logger=logger, handle=redis_client, process=data_parse_process)
         queue_pop(logger=logger, handle=redis_client, process=data_parse_process)
-

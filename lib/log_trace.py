@@ -1,18 +1,30 @@
+"""
+log_trace.py
+
+"""
 import os
 import time
-import json
 from logging import Logger
 
-from service import redis_client, send_to_redis, queue_push
+from service import redis_client
+from service.redis_svc import queue_push
 
 
 # from lib.mongo_logs import data_parse_process
 
-line_cmd = '\"c\":\"COMMAND\"'
-line_auth = '\"c\":\"ACCESS\"'
-line_ex_msg1 = 'Slow'
-line_auth_detail1="Authentication succeeded"
-line_auth_detail2="Successfully authenticated"
+LINE_CMD = '\"c\":\"COMMAND\"'
+LINE_AUTH = '\"c\":\"ACCESS\"'
+LINE_EX_MSG1 = 'Slow'
+LINE_AUTH_DETAIL1 = "Authentication succeeded"
+LINE_AUTH_DETAIL2 = "Successfully authenticated"
+
+
+"""
+trace_log
+
+:log_fd
+:logger
+"""
 
 
 def trace_log(log_fd, logger: Logger):
@@ -35,11 +47,11 @@ def trace_log(log_fd, logger: Logger):
             else:
                 not_read_cnt = 0
                 set_retry_this(False)
-                if line_cmd  in line:
-                    if line_ex_msg1 not in line and 'Applying default' not in line:
+                if LINE_CMD in line:
+                    if LINE_EX_MSG1 not in line and 'Applying default' not in line:
                         queue_push(logger, redis_client, line)
-                elif line_auth in line:
-                    if line_auth_detail1 in line or line_auth_detail2 in line:
+                elif LINE_AUTH in line:
+                    if LINE_AUTH_DETAIL1 in line or LINE_AUTH_DETAIL2 in line:
                         queue_push(logger, redis_client, line)
         except FileNotFoundError as file_not_found:
             logger.info(f'trace_log: FileNotFoundError\n\t\t{file_not_found}')
@@ -51,4 +63,3 @@ def trace_log(log_fd, logger: Logger):
             return False
     logger.info(f'end follow - {log_fd}')
     return True
-
