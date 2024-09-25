@@ -38,12 +38,12 @@ def select_datas(conn, cursor=None, table: str = "", where: str = None, order: s
     
     if order is not None and len(order) > 8:
         query = query + " " + order
-    logger.info(f'select_datas: query={query}')
+    # logger.info(f'select_datas: query={query}')
     cur.execute(query)
     rows = cur.fetchall()
     for row in rows:
         datas.append(row)
-    logger.info(f'select_datas: rows={rows}')
+    # logger.info(f'select_datas: rows={rows}')
     return datas
 
 

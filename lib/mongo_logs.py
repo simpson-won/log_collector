@@ -68,20 +68,12 @@ def check_accept_state(log_dict):
 
 
 def check_authenticated(log_dict):
-    date = log_dict["t"]["$date"]
-    client = log_dict["attr"]["client"]
-    user = log_dict["attr"]["user"]
-    db = log_dict["attr"]["db"]
-    ctx = log_dict["ctx"]
-    logger.info(f'check_authenticated: {date} ctx = {ctx}, cmd = AUTH, client = {client}, user = {user}, db = {db}')
-    insert_ua_value([client, ctx, date, db, user])
+    # logger.info(f'check_authenticated: {log_dict["attr"]["client"]}, {log_dict["ctx"]}, {log_dict["t"]["$date"]}, {log_dict["attr"]["db"]}, {log_dict["attr"]["user"]}')
+    insert_ua_value(log_dict["attr"]["client"], log_dict["ctx"], log_dict["t"]["$date"], log_dict["attr"]["db"], log_dict["attr"]["user"])
 
 
 def check_connection_ended(log_dict):
-    date = log_dict["t"]["$date"]
-    client = log_dict["attr"]["remote"]
-    ctx = log_dict["ctx"]
-    logger.info(f'check_connection_ended: {date} ctx = {ctx}, cmd = DISCON, client = {client}')
+    pass
 
 
 def check_returning_user_from_cache(log_dict):
@@ -89,21 +81,21 @@ def check_returning_user_from_cache(log_dict):
 
 
 def check_command(log_dict):
+    # logger.info(f'check_command: {log_dict}')
     cmd_info = log_dict["attr"]["commandArgs"]
     cmd_keys = list(cmd_info.keys())
-    cmd = cmd_keys[0]
-    client = log_dict["attr"]["client"]
-    if cmd not in exclude_cmds and len(client) > 0:
-        table = cmd_info.get(cmd)
-        db = log_dict["attr"]["db"]
-        date = log_dict["t"]["$date"]
-        ctx = log_dict["ctx"]
-        logger.info(f'=== {date} ctx = {ctx}, cmd = {cmd}, client = {client}, table = {table}, db = {db}')
-        if db not in exclude_dbs:
-            logger.info(f'check_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
-            insert_uc_value([client, cmd, ctx, date, db, table])
+    # cmd = cmd_keys[0]
+    # client = log_dict["attr"]["client"]
+    if cmd_keys[0] not in exclude_cmds:
+        # and len(client) > 0:
+        # table = cmd_info.get(cmd)
+        # db = log_dict["attr"]["db"]
+        # date = log_dict["t"]["$date"]
+        # ctx = log_dict["ctx"]
+        if log_dict["attr"]["db"] not in exclude_dbs:
+            # logger.info(f'check_command: date={date}, ctx={ctx}, cmd={cmd}, client={client}, table_name={table}, db={db}')
+            insert_uc_value([log_dict["attr"]["client"], cmd_keys[0], log_dict["ctx"], log_dict["t"]["$date"], log_dict["attr"]["db"], cmd_info.get(cmd_keys[0])])
         return
-    return
 
 
 monitoring_lines = {"Connection accepted": check_accept_state,
@@ -114,11 +106,24 @@ monitoring_lines = {"Connection accepted": check_accept_state,
                     }
 
 
+def data_parse_process_internal(data):
+    # logger.info(f'data_parse_process_internal: data={data}')
+    log_dict = json.loads(str(data))
+    if log_dict["msg"] in monitoring_lines.keys():
+        # logger.info(f'data_parse_process_internal: log_dict={log_dict}')
+        monitoring_lines[log_dict["msg"]](log_dict)
+
+
 def data_parse_process(data):
-    if type(data) in [str, bytes]:
-        if type(data) == bytes:
-            data = data.decode('utf-8')
-        if data.startswith('{'):
-            log_dict = json.loads(str(data))
-            if log_dict["msg"] in monitoring_lines.keys():
-                monitoring_lines[log_dict["msg"]](log_dict)
+    try:
+        if type(data) in [str, bytes]:
+            if type(data) == bytes:
+                data = data.decode('utf-8')
+            if data.startswith('{'):
+                log_dict = json.loads(str(data))
+                if log_dict["msg"] in monitoring_lines.keys():
+                    # logger.info(f'data_parse_process_internal: log_dict={log_dict}')
+                    monitoring_lines[log_dict["msg"]](log_dict)
+    except Exception as e:
+        logger.error(f'data_parse_process: Exception\n\t\t\{e}')
+

@@ -5,6 +5,7 @@ from lib.pid import write_pid
 from lib.log_trace import trace_log
 from service import recv_from_redis, redis_client
 from lib.args import get_args
+from log import logger
 
 run_mode = 'publisher'
 
@@ -29,7 +30,6 @@ def log_monitor(file_name: str):
     global retry_this
     global retry_count
     global is_log_trace
-    from log import logger
 
     try:
         with open(file_name, "rt") as fd:
@@ -50,8 +50,6 @@ def retry_run(log_path):
     global retry_count
     global retry_this
 
-    from log import logger
-    
     while retry_this:
         log_monitor(file_name=log_path)
         logger.info(f'retry_run: retry_count={retry_count} retry_this={retry_this}')
@@ -64,7 +62,6 @@ def retry_run(log_path):
 
 
 def stop_func(sig_num, data):
-    from log import logger
     global is_log_trace
     global retry_this
     global retry_count
@@ -77,21 +74,22 @@ def stop_func(sig_num, data):
 
 if __name__ == "__main__":
     mongodb_log_path, run_mode = get_args()
+
+    print(f'main: 0')
     
     sig_init(signals=[(signal.SIGUSR1, stop_func)])
+    print(f'main: 1')
 
-    from log import set_log_file_name
-    
     if run_mode == "publisher":
-        set_log_file_name("log_collector_v2_pub.log")
-        from log import logger
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         write_pid(file_path="/var/run/log_collector_v2_pub.pid")
         retry_run(log_path=mongodb_log_path)
     else:
-        set_log_file_name("log_collector_v2_sub.log")
-        write_pid(file_path="/var/run/log_collector_v2_sub.pid")
+        print(f'main: 2')
         from lib.mongo_logs import data_parse_process
-        from log import logger
+        logger.info(f'main: 0 log_path={mongodb_log_path}, run_mode={run_mode}')
+        print(f'main: 3')
+        
+        write_pid(file_path="/var/run/log_collector_v2_sub.pid")
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         recv_from_redis(logger=logger, handle=redis_client, process=data_parse_process)
