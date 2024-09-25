@@ -1,5 +1,5 @@
 [Unit]
-Description=Log Collector Subscribe Service.
+Description=Log Collector Subscribe Service No2.
 Wants=network.target
 After=network.target
 
@@ -12,9 +12,9 @@ Environment=PYTHONPATH=/opt/log_collector_v2/venv/lib/python3.10/site-packages:/
 ExecStart=/opt/log_collector_v2/venv/bin/python /opt/log_collector_v2/log_collector_v2.py --run-mode subscriber
 Restart=on-failure
 RestartSec=20s
-PIDFile=/var/run/log_collector_v2_sub.pid
-StandardOutput=file:/opt/log_collector_v2/log_collector_sub_run.log
-StandardError=file:/opt/log_collector_v2/log_collector_sub_error.log
+PIDFile=/var/run/log_collector_v2_sub_2.pid
+StandardOutput=file:/opt/log_collector_v2/log_collector_sub_2_run.log
+StandardError=file:/opt/log_collector_v2/log_collector_sub_2_error.log
 ExecStop=
 
 [Install]
