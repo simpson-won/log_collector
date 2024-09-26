@@ -146,3 +146,19 @@ log_collector의 경우에도 log-rotation 관련 스크립트를 작성해야 �
     dateext
 }
 ```
+
+# 로그 조회
+로그 조회는 인프라 매니저에서 가능합니다.
+주소는 다음과 같습니다.\
+ `
+ http://eimmo-infra-manager.koreacentral.cloudapp.azure.com:8080/
+ `\
+<p style="text-align: center;">
+<img src="image/image_01.png" width=50%/>
+</p>
+<p style="text-align: center;">
+<img src="image/image_02.png" width=50%/>
+</p>
+<p style="text-align: center;">
+<img src="image/image_03.png" width=50%/>
+</p>
