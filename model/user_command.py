@@ -29,6 +29,7 @@ class UserCommand:
     db: str
     table_name: str
     user: str
+    args: str
     
     def __init__(self,
                  id: int = 0,
@@ -38,7 +39,8 @@ class UserCommand:
                  date: datetime = datetime.now(),
                  db: str = "",
                  table_name: str = "",
-                 user: str = ""):
+                 user: str = "",
+                 args: str = ""):
         self.id = id
         self.client = client
         self.cmd = cmd
@@ -47,6 +49,7 @@ class UserCommand:
         self.db = db
         self.table_name = table_name
         self.user = user
+        self.args = args
     
     def where_all(self):
         return f'date=\"{self.date}\" and ' \
@@ -55,20 +58,23 @@ class UserCommand:
             + f'user=\"{self.user}\" and ' \
             + f'client=\"{self.client}\" and ' \
             + f'db=\"{self.db}\" and ' \
-            + f'table_name=\"{self.table_name}\"'
+            + f'table_name=\"{self.table_name}\"' \
+            + f'args=\"{self.args}\"'
     
     def __str__(self) -> str:
-        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\"'
+        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{self.args}\"'
     
     def __eq__(self, other):
         if self.date == other.date and self.ctx == other.ctx and self.cmd == other.cmd \
-                and self.user == other.user and self.client == other.client and self.db == other.db and self.table_name == other.table_name:
+                and self.user == other.user and self.client == other.client \
+                and self.db == other.db and self.table_name == other.table_name \
+                and self.args == other.args:
             return True
         else:
             return False
 
     @staticmethod
-    def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user=""):
+    def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user="", args=""):
         return UserCommand(
             date=updated,
             ctx=ctx,
@@ -76,5 +82,6 @@ class UserCommand:
             user=user,
             client=client,
             db=db,
-            table_name=table_name
+            table_name=table_name,
+            args=args
         )
