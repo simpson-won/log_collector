@@ -92,16 +92,24 @@ def check_returning_user_from_cache(log_dict):
 
 
 def check_command(log_dict):
-    cmd_info = log_dict["attr"]["commandArgs"]
-    cmd_keys = list(cmd_info.keys())
+    cmd_args = log_dict["attr"]["commandArgs"]
+    cmd_keys = list(cmd_args.keys())
     if cmd_keys[0] not in exclude_cmds:
         if log_dict["attr"]["db"] not in exclude_dbs:
-            insert_uc_value([log_dict["attr"]["client"],
-                             cmd_keys[0],
-                             log_dict["ctx"],
-                             log_dict["t"]["$date"],
-                             log_dict["attr"]["db"],
-                             cmd_info.get(cmd_keys[0])])
+            if cmd_keys[0] == "find":
+                filter_str = ""
+            else:
+                if "limit" in cmd_args:
+                    filter_str = "filters = " + str(cmd_args.get("filter")) + ", limit = " + str(cmd_args.get("limit"))
+                else:
+                    filter_str = "filters = " + str(cmd_args.get("filter"))
+            insert_uc_value(values=[log_dict["attr"]["client"],
+                                    cmd_keys[0],
+                                    log_dict["ctx"],
+                                    log_dict["t"]["$date"],
+                                    log_dict["attr"]["db"],
+                                    cmd_args.get(cmd_keys[0])],
+                            filter_str=filter_str)
 
 
 monitoring_lines = {"Connection accepted": check_accept_state,
