@@ -33,6 +33,7 @@ def insert_value(values: list, cursor=None, auto_commit=True):
                                         db=values[4],
                                         ctx=values[2])
     values.append(user)
+    values.append(" ")
     user_cmd = UserCommand.create(*values)
     insert_data(conn=db_handle,
                 cursor=t_cursor,
