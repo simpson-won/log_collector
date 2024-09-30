@@ -97,12 +97,12 @@ def check_command(log_dict):
     if cmd_keys[0] not in exclude_cmds:
         if log_dict["attr"]["db"] not in exclude_dbs:
             if cmd_keys[0] == "find":
-                filter_str = ""
-            else:
                 if "limit" in cmd_args:
                     filter_str = "filters = " + str(cmd_args.get("filter")) + ", limit = " + str(cmd_args.get("limit"))
                 else:
                     filter_str = "filters = " + str(cmd_args.get("filter"))
+            else:
+                filter_str = ""
             insert_uc_value(values=[log_dict["attr"]["client"],
                                     cmd_keys[0],
                                     log_dict["ctx"],
