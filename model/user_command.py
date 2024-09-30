@@ -62,7 +62,11 @@ class UserCommand:
             + f'args=\"{self.args}\"'
     
     def __str__(self) -> str:
-        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{self.args}\"'
+        if self.args is None:
+            args = ""
+        else:
+            args = self.args
+        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{args}\"'
     
     def __eq__(self, other):
         if self.date == other.date and self.ctx == other.ctx and self.cmd == other.cmd \
@@ -72,9 +76,11 @@ class UserCommand:
             return True
         else:
             return False
-
+    
     @staticmethod
     def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user="", args=""):
+        if args is None:
+            args = ""
         return UserCommand(
             date=updated,
             ctx=ctx,
