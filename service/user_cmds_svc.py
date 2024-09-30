@@ -21,7 +21,7 @@ def select_value(cursor=None, value: UserCommand = None):
     return value_list
 
 
-def insert_value(values: list, cursor=None, auto_commit=True):
+def insert_value(values: list, cursor=None, auto_commit=True, filter_str=""):
     if len(values) != 6:
         return
     if cursor is None:
@@ -33,7 +33,7 @@ def insert_value(values: list, cursor=None, auto_commit=True):
                                         db=values[4],
                                         ctx=values[2])
     values.append(user)
-    values.append(" ")
+    values.append(filter_str)
     user_cmd = UserCommand.create(*values)
     insert_data(conn=db_handle,
                 cursor=t_cursor,
