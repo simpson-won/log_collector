@@ -68,6 +68,8 @@ def check_accept_state(log_dict):
 
 
 def check_authenticated(log_dict):
+    if log_dict["attr"]["user"] is not None and log_dict["attr"]["user"] in exclude_users:
+        return
     insert_ua_value((log_dict["attr"]["client"],
                     log_dict["ctx"],
                     log_dict["t"]["$date"],
