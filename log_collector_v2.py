@@ -1,6 +1,6 @@
 import time
 import signal
-from lib.signal import sig_init
+from lib.pri_signal import sig_init
 from lib.pid import write_pid
 from lib.log_trace import trace_log
 from service import redis_client
@@ -82,7 +82,8 @@ if __name__ == "__main__":
         write_pid(file_path=f"/var/run/log_collector_v2_pub_{pid}.pid")
         retry_run(log_path=mongodb_log_path)
     else:
-        from lib.mongo_logs import data_parse_process
+        # from lib.mongo_logs import data_parse_process
+        from lib.aws_logs import data_parse_process
         write_pid(file_path=f"/var/run/log_collector_v2_sub_{pid}.pid")
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         queue_pop(logger=logger, handle=redis_client, process=data_parse_process)

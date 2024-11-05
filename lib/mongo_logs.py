@@ -59,41 +59,45 @@ exclude_cmds = ['hello',
                 'getCmdLineOpts',
                 ]
 
-exclude_dbs = ['config']
-exclude_users = ['__system']
+exclude_dbs = ['config', 'local', 'admin']
+exclude_users = ['__system', 'admin']
 
 
-def check_accept_state(log_dict):
+def check_accept_state(log_dict, args=[]):
     pass
 
 
-def check_authenticated(log_dict):
-    if log_dict["attr"]["user"] is not None and log_dict["attr"]["user"] in exclude_users:
-        return
-    insert_ua_value((log_dict["attr"]["client"],
-                    log_dict["ctx"],
-                    log_dict["t"]["$date"],
-                    log_dict["attr"]["db"],
-                    log_dict["attr"]["user"]))
+def check_authenticated(log_dict, args=[]):
+    if "user" in log_dict["attr"] and "db" in log_dict["attr"]:
+        if log_dict["attr"]["user"] not in exclude_users or log_dict["attr"]["db"] not in exclude_dbs:
+            insert_ua_value((log_dict["attr"]["client"],
+                             log_dict["ctx"],
+                             log_dict["t"]["$date"],
+                             log_dict["attr"]["db"],
+                             log_dict["attr"]["user"],
+                             args[0],
+                             args[1]))
 
 
-def check_authenticated2(log_dict):
+def check_authenticated2(log_dict, args=[]):
     insert_ua_value((log_dict["attr"]["remote"],
-                    log_dict["ctx"],
-                    log_dict["t"]["$date"],
-                    log_dict["attr"]["authenticationDatabase"],
-                    log_dict["attr"]["principalName"]))
+                     log_dict["ctx"],
+                     log_dict["t"]["$date"],
+                     log_dict["attr"]["authenticationDatabase"],
+                     log_dict["attr"]["principalName"],
+                     args[0],
+                     args[1]))
 
 
-def check_connection_ended(log_dict):
+def check_connection_ended(log_dict, args=[]):
     pass
 
 
-def check_returning_user_from_cache(log_dict):
+def check_returning_user_from_cache(log_dict, args=[]):
     pass
 
 
-def check_command(log_dict):
+def check_command(log_dict, args=[]):
     cmd_args = log_dict["attr"]["commandArgs"]
     cmd_keys = list(cmd_args.keys())
     if cmd_keys[0] not in exclude_cmds:
@@ -103,14 +107,18 @@ def check_command(log_dict):
                     filter_str = "filters = " + str(cmd_args.get("filter")) + ", limit = " + str(cmd_args.get("limit"))
                 else:
                     filter_str = "filters = " + str(cmd_args.get("filter"))
+            elif cmd_keys[0] == "update":
+                filter_str = "filters = " + str(cmd_args.get("filter"))
             else:
                 filter_str = ""
-            insert_uc_value(values=[log_dict["attr"]["client"],
+            insert_uc_value(values=(log_dict["attr"]["client"],
                                     cmd_keys[0],
                                     log_dict["ctx"],
                                     log_dict["t"]["$date"],
                                     log_dict["attr"]["db"],
-                                    cmd_args.get(cmd_keys[0])],
+                                    cmd_args.get(cmd_keys[0]),
+                                    args[0],
+                                    args[1]),
                             filter_str=filter_str)
 
 
@@ -131,6 +139,6 @@ def data_parse_process(data):
             if data.startswith('{'):
                 log_dict = json.loads(str(data))
                 if log_dict["msg"] in monitoring_lines.keys():
-                    monitoring_lines[log_dict["msg"]](log_dict)
+                    monitoring_lines[log_dict["msg"]](log_dict, ["dev", "unknown"])
     except Exception as e:
         logger.error(f'data_parse_process: Exception\n\t\t{e}')

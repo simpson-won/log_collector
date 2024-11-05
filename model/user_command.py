@@ -30,6 +30,8 @@ class UserCommand:
     table_name: str
     user: str
     args: str
+    database_name: str
+    host: str
     
     def __init__(self,
                  id: int = 0,
@@ -40,7 +42,9 @@ class UserCommand:
                  db: str = "",
                  table_name: str = "",
                  user: str = "",
-                 args: str = ""):
+                 args: str = "",
+                 database_name: str ="",
+                 host: str = ""):
         self.id = id
         self.client = client
         self.cmd = cmd
@@ -50,6 +54,8 @@ class UserCommand:
         self.table_name = table_name
         self.user = user
         self.args = args
+        self.database_name = database_name
+        self.host = host
     
     def where_all(self):
         return f'date=\"{self.date}\" and ' \
@@ -58,27 +64,29 @@ class UserCommand:
             + f'user=\"{self.user}\" and ' \
             + f'client=\"{self.client}\" and ' \
             + f'db=\"{self.db}\" and ' \
-            + f'table_name=\"{self.table_name}\"' \
-            + f'args=\"{self.args}\"'
+            + f'table_name=\"{self.table_name}\" and ' \
+            + f'args=\"{self.args}\" and ' \
+            + f'database_name=\"{self.database_name}\" and ' \
+            + f'host=\"{self.host}\"'
     
     def __str__(self) -> str:
         if self.args is None:
             args = ""
         else:
             args = self.args
-        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{args}\"'
+        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{args}\", \"{self.database_name}\", \"{self.host}\"'
     
     def __eq__(self, other):
         if self.date == other.date and self.ctx == other.ctx and self.cmd == other.cmd \
                 and self.user == other.user and self.client == other.client \
                 and self.db == other.db and self.table_name == other.table_name \
-                and self.args == other.args:
+                and self.args == other.args and self.database_name == other.database_name \
+                and self.host == other.host:
             return True
-        else:
-            return False
+        return False
     
     @staticmethod
-    def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user="", args=""):
+    def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user="", args="", database_name="", host=""):
         if args is None:
             args = ""
         return UserCommand(
@@ -89,5 +97,7 @@ class UserCommand:
             client=client,
             db=db,
             table_name=table_name,
-            args=args
+            args=args,
+            database_name=database_name,
+            host=host
         )
