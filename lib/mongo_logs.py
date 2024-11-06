@@ -13,7 +13,7 @@ def data_parse_process(data):
                 data = data.decode('utf-8')
             if data.startswith('{'):
                 body = json.loads(str(data))
-                if "msg" in body and body["msg"] in log_c_process:
+                if body["c"] in log_c_process:
                     log_c_process[body["c"]](body, [db_name, db_host], True)
     except Exception as e:
         logger.error('data_parse_process: Exception\n\t\t%s', e)

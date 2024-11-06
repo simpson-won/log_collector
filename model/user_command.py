@@ -25,7 +25,7 @@ class UserCommand:
     client: str
     cmd: str
     ctx: str
-    date: datetime
+    updated_at: datetime
     db: str
     table_name: str
     user: str
@@ -38,7 +38,7 @@ class UserCommand:
                  client: str = "",
                  cmd: str = "",
                  ctx: str = "",
-                 date: datetime = datetime.now(),
+                 updated_at: datetime = datetime.now(),
                  db: str = "",
                  table_name: str = "",
                  user: str = "",
@@ -49,7 +49,7 @@ class UserCommand:
         self.client = client
         self.cmd = cmd
         self.ctx = ctx
-        self.date = date
+        self.updated_at = updated_at
         self.db = db
         self.table_name = table_name
         self.user = user
@@ -58,7 +58,7 @@ class UserCommand:
         self.host = host
     
     def where_all(self):
-        return f'date=\"{self.date}\" and ' \
+        return f'updated_at=\"{self.updated_at}\" and ' \
             + f'ctx=\"{self.ctx}\" and ' \
             + f'cmd=\"{self.cmd}\" and ' \
             + f'user=\"{self.user}\" and ' \
@@ -74,10 +74,10 @@ class UserCommand:
             args = ""
         else:
             args = self.args
-        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.date}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{args}\", \"{self.database_name}\", \"{self.host}\"'
+        return f'\"{self.id}\", \"{self.client}\", \"{self.cmd}\", \"{self.ctx}\", \"{self.updated_at}\", \"{self.db}\", \"{self.table_name}\", \"{self.user}\", \"{args}\", \"{self.database_name}\", \"{self.host}\"'
     
     def __eq__(self, other):
-        if self.date == other.date and self.ctx == other.ctx and self.cmd == other.cmd \
+        if self.updated_at == other.updated_at and self.ctx == other.ctx and self.cmd == other.cmd \
                 and self.user == other.user and self.client == other.client \
                 and self.db == other.db and self.table_name == other.table_name \
                 and self.args == other.args and self.database_name == other.database_name \
@@ -90,7 +90,7 @@ class UserCommand:
         if args is None:
             args = ""
         return UserCommand(
-            date=updated,
+            updated_at=updated,
             ctx=ctx,
             cmd=cmd,
             user=user,
