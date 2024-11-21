@@ -8,6 +8,8 @@ from logging import Logger
 
 from service import redis_client
 from service.redis_svc import queue_push
+from lib.mongo_logs import celery_task as vms_celery_task
+from lib.aws_logs import celery_task as aws_celery_task
 
 
 # from lib.mongo_logs import data_parse_process
@@ -18,6 +20,8 @@ LINE_EX_MSG1 = 'Slow'
 LINE_AUTH_DETAIL1 = "Authentication succeeded"
 LINE_AUTH_DETAIL2 = "Successfully authenticated"
 
+target_tasks = {"vms": vms_celery_task, "aws": aws_celery_task}
+
 
 """
 trace_log
@@ -27,7 +31,7 @@ trace_log
 """
 
 
-def trace_log(log_fd, logger: Logger):
+def trace_log(log_fd, logger: Logger, op_version: int = 2, target: str = "vms"):
     logger.info(f'start follow - {log_fd}')
     log_fd.seek(0, 2)
     from log_collector_v2 import is_log_trace, set_retry_count, set_retry_this
@@ -49,10 +53,16 @@ def trace_log(log_fd, logger: Logger):
                 set_retry_this(False)
                 if LINE_CMD in line:
                     if LINE_EX_MSG1 not in line and 'Applying default' not in line:
-                        queue_push(logger, redis_client, line)
+                        if op_version == 2:
+                            queue_push(logger, redis_client, line)
+                        else:
+                            target_tasks[target].delay(line)
                 elif LINE_AUTH in line:
                     if LINE_AUTH_DETAIL1 in line or LINE_AUTH_DETAIL2 in line:
-                        queue_push(logger, redis_client, line)
+                        if op_version == 2:
+                            queue_push(logger, redis_client, line)
+                        else:
+                            target_tasks[target].delay(line)
         except FileNotFoundError as file_not_found:
             logger.info(f'trace_log: FileNotFoundError\n\t\t{file_not_found}')
             set_retry_this(True)

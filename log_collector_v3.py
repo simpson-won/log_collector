@@ -1,4 +1,3 @@
-"""parse and process for mongo log"""
 import time
 import signal
 from lib.pri_signal import sig_init
@@ -17,16 +16,19 @@ retry_count = 0
 
 
 def set_retry_this(value: bool):
+    """set_retry_this"""
     global retry_this
     retry_this = value
 
 
 def set_retry_count(value: int):
+    """set_retry_count"""
     global retry_count
     retry_count = value
 
 
-def log_monitor(file_name: str, target: str = "vms"):
+def log_monitor(file_name: str, op_version: int, target: str = "vms"):
+    """log_monitor"""
     global retry_this
     global retry_count
     global is_log_trace
@@ -35,7 +37,7 @@ def log_monitor(file_name: str, target: str = "vms"):
         with open(file_name, "rt") as fd:
             logger.info(f'log_monitor: success to open file {fd}')
             is_log_trace = True
-            result = trace_log(fd, logger=logger, target=target)
+            result = trace_log(fd, logger=logger, op_version=op_version, target=target)
             fd.close()
             return result
     except FileNotFoundError as file_not_found:
@@ -46,12 +48,12 @@ def log_monitor(file_name: str, target: str = "vms"):
     return False
 
 
-def retry_run(log_path, target: str = "vms"):
+def retry_run(log_path, op_version, target: str = "vms"):
+    """retry run"""
     global retry_count
     global retry_this
-
     while retry_this:
-        log_monitor(file_name=log_path, target=target)
+        log_monitor(file_name=log_path, op_version=op_version,target=target)
         logger.info(f'retry_run: retry_count={retry_count} retry_this={retry_this}')
         if retry_count < 600:
             retry_count += 1
@@ -62,6 +64,7 @@ def retry_run(log_path, target: str = "vms"):
 
 
 def stop_func(sig_num, data):
+    """stop func"""
     global is_log_trace
     global retry_this
     global retry_count
@@ -72,19 +75,25 @@ def stop_func(sig_num, data):
 
 
 if __name__ == "__main__":
-    mongodb_log_path, run_mode, pid, target, _ = get_args()
+    """main"""
+    mongodb_log_path, run_mode, pid, target, op_ver = get_args()
 
     sig_init(signals=[(signal.SIGUSR1, stop_func)])
 
     if run_mode == "publisher":
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
         write_pid(file_path=f"/var/run/log_collector_v2_pub_{pid}.pid")
-        retry_run(log_path=mongodb_log_path, target=target)
+        retry_run(log_path=mongodb_log_path, op_version=op_ver, target=target)
     else:
         from lib.mongo_logs import data_parse_process as vms_parse_process
         from lib.aws_logs import data_parse_process as aws_parse_process
-
         target_process = {"aws": aws_parse_process, "vms": vms_parse_process}
         write_pid(file_path=f"/var/run/log_collector_v2_sub_{pid}.pid")
-        # logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
-        queue_pop(logger=logger, handle=redis_client, process=target_process[target])
+        logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
+        if op_ver == 2:
+            queue_pop(logger=logger, handle=redis_client, process=target_process[target])
+        else:
+            print("*** Important ****")
+            print("You need to start using celery")
+            print("=> celery -A log_collector_v3_sub --concurrency 3 -l INFO")
+            print("Bye...")

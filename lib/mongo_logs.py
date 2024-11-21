@@ -4,6 +4,8 @@ from log import logger
 from lib.mongo_log_parse import log_c_process
 from config import db_host, db_name
 
+from log_collector_v3_sub import celery_app
+
 
 def data_parse_process(data):
     """Main function for msg"""
@@ -17,3 +19,8 @@ def data_parse_process(data):
                     log_c_process[body["c"]](body, [db_name, db_host], True)
     except Exception as e:
         logger.error('data_parse_process: Exception\n\t\t%s', e)
+
+
+@celery_app.task
+def celery_task(data):
+    data_parse_process(data=data)
