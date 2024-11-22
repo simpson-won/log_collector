@@ -306,7 +306,7 @@ def sig_exit(sig, arg):
 if __name__ == "__main__":
     import signal
     import json
-    from config import db_host, db_name
+    from config import mongodb_host, mongodb_name
     signal.signal(signal.SIGTERM, sig_exit)
     if len(sys.argv) == 2:
         FILE_NAME = sys.argv[1].encode("utf-8")
@@ -319,7 +319,7 @@ if __name__ == "__main__":
                 try:
                     log_json = json.loads(line)
                     if log_json['c'] in log_c_process:
-                        log_c_process[log_json['c']](log_json, (db_name, db_host), False)
+                        log_c_process[log_json['c']](log_json, (mongodb_name, mongodb_host), False)
                 except json.JSONDecodeError as ex:
                     print(f'except : {ex}')
                     print(f'line = ##{line}##, len={len(line)}')
