@@ -84,7 +84,7 @@ def check_authenticated(log_dict, args=(), real_write=True):
 
 def check_authenticated2(log_dict, args=(), real_write=True):
     """Function for authenticated msg"""
-    if "user" in log_dict["attr"] and log_dict["attr"]["user"] not in exclude_users:
+    if "principalName" in log_dict["attr"] and log_dict["attr"]["principalName"] not in exclude_users:
         insert_ua_value((log_dict["attr"]["remote"],
                          log_dict["ctx"],
                          log_dict["t"]["$date"],

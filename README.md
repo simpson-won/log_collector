@@ -158,6 +158,31 @@ PYTHONPATH=$PWD:$PWD/venv/lib/python[Version] $PWD/venv/bin/celery -A log_collec
 PYTHONPATH=$PWD:$PWD/venv/lib/python[Version] $PWD/venv/bin/python log_collector_v3.py --filepath=/data/log/mongod.log --op_version=3
 ```
 
+# Config example
+```python
+mongodb_host = "mongodb host name"
+mongodb_name = "main database name"
+log_format = "%(levelname)s %(asctime)s = %(message)s"
+
+
+AWS_ACCESS_KEY="Azure Access Key"
+AWS_SECERET_KEY="Azure Secret Key"
+
+redis_channel = "mongolog"
+redis_host = "127.0.0.1"
+redis_port = 6379
+redis_db = 1
+
+# db configuration
+db_write_host="master db ip"
+db_read_host="slave db ip"
+db_port=3306
+db_user="monitoring"
+db_passwd="DB password"
+db_db="eimmo_monitoring_dev"
+charset="utf8"
+```
+
 # 로그 조회
 로그 조회는 인프라 매니저에서 가능합니다.
 주소는 다음과 같습니다.
