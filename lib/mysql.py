@@ -37,7 +37,7 @@ def select_datas(conn, table: str = "", where: str = None, order: str = None) ->
         query = query + f' where {where}'
     if order is not None and len(order) > 8:
         query = query + " " + order
-    # logger.info(f'select_datas: query={query}')
+    logger.info(f'select_datas: query={query}')
     cur.execute(query)
     rows = cur.fetchall()
     for row in rows:
@@ -77,13 +77,12 @@ def insert_data(conn, cursor=None, table="", value=None, auto_commit=True):
         else:
             cur = cursor
         query = f'insert ignore into {table} values({str(value)})'
-        # logger.info(f'query={query}')
+        logger.info(f'query={query}')
         cur.execute(query)
         if auto_commit and DATA_COUNT > 1:
             conn.commit()
             DATA_COUNT = 0
         else:
             DATA_COUNT += 1
-
     except Exception as e:
         logger.info('insert_data: %s', e)
