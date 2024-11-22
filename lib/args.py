@@ -1,9 +1,12 @@
+"""
+args library
+"""
 import os
 import argparse
 
 
 def get_args():
-
+    """get_args"""
     parser = argparse.ArgumentParser(description='Mongodb Log Monitoring.')
     parser.add_argument('--filepath', dest='filepath',
                         action='store', default="/data/log/mongod.log")
@@ -32,4 +35,4 @@ def get_args():
         run_mode = run_mode_env
     if mongodb_log_path_env is not None:
         mongodb_log_path = mongodb_log_path_env
-    return mongodb_log_path, run_mode, pid
+    return mongodb_log_path, run_mode, pid, args.target, args.op_version

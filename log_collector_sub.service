@@ -1,0 +1,19 @@
+[Unit]
+Description=Log Collector Subscribe Service No1.
+After=redis-server.service
+Requires=redis-server.service
+
+[Service]
+Type=forking
+WorkingDirectory=/opt/log_collector_v2/
+Environment=PATH=/opt/log_collector_v2/venv/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
+Environment=MONGO_LOG=/data/log/mongod.log
+Environment=PYTHONPATH=/opt/log_collector_v2/venv/lib/python3.12/site-packages:/opt/log_collector_v2
+ExecStart=/bin/sh -c '/opt/log_collector_v2/venv/bin/celery multi start worker1 -A log_collector_v3_sub --concurrency=3 --loglevel=INFO --pidfile="/var/run/log_collector_sub-%n.pid"'
+ExecStop=/bin/sh -c '/opt/log_collector_v2/venv/bin/celery multi stop worker1 --pidfile="/var/run/log_collector_sub-%n.pid"'
+ExecReload=/bin/sh -c '/opt/log_collector_v2/venv/bin/celery multi restart worker1 -A log_collector_v3_sub --pidfile="/var/run/log_collector_sub-%n.pid" --loglevel=INFO --concurrency=3'
+Restart=on-failure
+RestartSec=20s
+
+[Install]
+WantedBy=multi-user.target

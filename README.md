@@ -147,6 +147,17 @@ log_collector의 경우에도 log-rotation 관련 스크립트를 작성해야 �
 }
 ```
 
+# Test
+## Worker
+```shell
+PYTHONPATH=$PWD:$PWD/venv/lib/python[Version] $PWD/venv/bin/celery -A log_collector_v3_sub worker --concurrency 3 -l INFO
+```
+
+## Publisher
+```shell
+PYTHONPATH=$PWD:$PWD/venv/lib/python[Version] $PWD/venv/bin/python log_collector_v3.py --filepath=/data/log/mongod.log --op_version=3
+```
+
 # 로그 조회
 로그 조회는 인프라 매니저에서 가능합니다.
 주소는 다음과 같습니다.

@@ -26,7 +26,7 @@ class UserAccess:
     user: str
     database_name: str
     host: str
-    
+
     def __init__(self,
                  id: int = 0,
                  client: str = "",
@@ -44,7 +44,7 @@ class UserAccess:
         self.user = user
         self.database_name = database_name
         self.host = host
-    
+
     def where_all(self):
         return f'updated_at=\"{self.updated_at}\" and ' \
             + f'ctx=\"{self.ctx}\" and ' \
@@ -53,11 +53,11 @@ class UserAccess:
             + f'db=\"{self.db}\" and ' \
             + f'database_name=\"{self.database_name}\" and '\
             + f'host=\"{self.host}\"'
-    
+
     def __str__(self) -> str:
         return f'\"{self.id}\", \"{self.client}\", \"{self.ctx}\", ' +\
-            '\"{self.updated_at}\", \"{self.db}\", \"{self.user}\", ' +\
-            '\"{self.database_name}\", \"{self.host}\"'
+            f'\"{self.updated_at}\", \"{self.db}\", \"{self.user}\", ' +\
+            f'\"{self.database_name}\", \"{self.host}\"'
     
     def __eq__(self, other):
         if self.updated_at == other.updated_at and self.ctx == other.ctx \
