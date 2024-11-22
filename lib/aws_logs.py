@@ -9,6 +9,7 @@ from log_collector_v3_sub import celery_app
 
 
 def record_process(record):
+    """record_process"""
     if 's3' in record:
         record_s3 = record['s3']
         bucket_name = record_s3['bucket']['name']
@@ -18,7 +19,7 @@ def record_process(record):
         body_bytes_list = s3_object["Body"].read().decode('utf-8').split("\n")
         for body_bytes in body_bytes_list:
             body = json.loads(body_bytes)
-            if "msg" in body and body["msg"] in log_c_process.keys():
+            if "msg" in body and body["msg"] in log_c_process:
                 log_c_process[body["c"]](body, [key_item[2], key_item[3]], True)
         s3_object_delete(bucket=bucket_name, key=object_key)
 
@@ -27,15 +28,15 @@ def parse_event_msg(event_msg):
     """parse_event_msg"""
     event_msg = event_msg.replace("\'", "\"")
     event = json.loads(event_msg)
-    logger.info(f'event = {event}')
+    logger.info('event = %s', event)
     record_process(event)
 
 
 def data_parse_process(data):
-    """data_oarse_process"""
+    """data_parse_process"""
     try:
-        if isinstance(data, [str, bytes]):
-            if type(data) == bytes:
+        if isinstance(data, (str, bytes)):
+            if isinstance(data, bytes):
                 data = data.decode('utf-8')
             if data.startswith('{'):
                 parse_event_msg(data)
@@ -43,7 +44,7 @@ def data_parse_process(data):
         logger.error('data_parse_process: Exception\n\t\t%s', e)
 
 
-@celery_app.task
+@celery_app.task(ignore_result=True)
 def celery_task(data):
     """celery task"""
     data_parse_process(data)

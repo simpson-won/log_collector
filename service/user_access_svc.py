@@ -38,9 +38,7 @@ def select_user_client_by_ctx_db_dbs(handle=None, ctx="", database_name="") -> (
 
 def select_user_by_ctx_db_client(handle=None, ctx="", client=""):
     """ctx와 client 정보로 사용자 정보 조회 {db}, {host}"""
-    where_clause = f"ctx=\"{ctx}\" and client=\"{client}\" " +\
-                   "and database_name=\"{database_name}\" " +\
-                   "and host=\"{host}\""
+    where_clause = f"ctx=\"{ctx}\" and client=\"{client}\""
     order_clause = "order by id desc"
     if handle is None:
         cur_handle = db_read_handle

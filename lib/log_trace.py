@@ -32,7 +32,8 @@ trace_log
 
 
 def trace_log(log_fd, logger: Logger, op_version: int = 2, target: str = "vms"):
-    logger.info(f'start follow - {log_fd}')
+    """trace_log"""
+    logger.info('start follow')
     log_fd.seek(0, 2)
     from log_collector_v2 import is_log_trace, set_retry_count, set_retry_this
     set_retry_this(False)
@@ -64,12 +65,12 @@ def trace_log(log_fd, logger: Logger, op_version: int = 2, target: str = "vms"):
                         else:
                             target_tasks[target].delay(line)
         except FileNotFoundError as file_not_found:
-            logger.info(f'trace_log: FileNotFoundError\n\t\t{file_not_found}')
+            logger.info('trace_log: FileNotFoundError\n\t\t%s', str(file_not_found))
             set_retry_this(True)
             return False
         except Exception as general_except:
-            logger.info(f'trace_log: Exception\n\t\t{general_except}')
+            logger.info('trace_log: Exception\n\t\t%s', str(general_except))
             set_retry_this(False)
             return False
-    logger.info(f'end follow - {log_fd}')
+    logger.info('end follow')
     return True

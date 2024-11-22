@@ -1,3 +1,6 @@
+"""
+log_collector_v3 main
+"""
 import time
 import signal
 from lib.pri_signal import sig_init
@@ -95,5 +98,5 @@ if __name__ == "__main__":
         else:
             print("*** Important ****")
             print("You need to start using celery")
-            print("=> celery -A log_collector_v3_sub --concurrency 3 -l INFO")
+            print("=> celery -A log_collector_v3_sub worker --concurrency 3 -l INFO")
             print("Bye...")

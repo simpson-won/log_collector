@@ -1,7 +1,7 @@
 [Unit]
 Description=Log Collector Subscribe Service No1.
-Wants=network.target
-After=network.target
+After=redis-server.service
+Requires=redis-server.service
 
 [Service]
 Type=simple
