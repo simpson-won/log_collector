@@ -71,10 +71,14 @@ class UserAccess:
     def create(client="", ctx="", updated_at=datetime.now(),
                db="", user="", database_name="dev", host="localhost"):
         # date, ctx, cmd, client, user, db,
+        if isinstance(updated_at, str):
+            new_updated_at = datetime.strptime(updated_at, '%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            new_updated_at = updated_at
         return UserAccess(
             client=client,
             ctx=ctx,
-            updated_at=updated_at,
+            updated_at=new_updated_at,
             db=db,
             user=user,
             database_name=database_name,

@@ -89,6 +89,10 @@ class UserCommand:
     def create(client="", cmd="", ctx="", updated=datetime.now(), db="", table_name="", user="", args="", database_name="", host=""):
         if args is None:
             args = ""
+        if isinstance(updated, str):
+            new_updated_at = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S.%fZ')
+        else:
+            new_updated_at = updated
         return UserCommand(
             updated_at=updated,
             ctx=ctx,
