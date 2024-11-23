@@ -1,6 +1,6 @@
 """service library for user_cmds"""
 from model.user_command import UserCommand, table_name
-from service import db_write_handle, db_read_handle
+from lib.mysql import db_write_handle, db_read_handle
 from lib.mysql import select_datas, insert_data
 from service.user_access_svc import select_user_by_ctx_db_client, select_user_client_by_ctx_db_dbs
 import logging
@@ -71,6 +71,10 @@ def insert_value_1(values: list, cursor=None,
         user, client = select_user_client_by_ctx_db_dbs(handle=db_write_handle,
                                                         ctx=values[1],
                                                         database_name=database_name)
+    if user is None:
+        user = "Unknown"
+    if client is None:
+        client = "Unknown"
     values.insert(0, client)
     values.append(user)
     values.append(filter_str)

@@ -15,9 +15,11 @@ def default_exit(sig_num, data):
     import time
     if run_mode != "publisher":
         from lib.mysql import db_fint
-        from service import db_handle
-        if db_handle is not None:
-            db_fint(db_handle)
+        from lib.mysql import db_write_handle, db_read_handle
+        if db_write_handle is not None:
+            db_fint(db_write_handle)
+        if db_read_handle is not None:
+            db_fint(db_read_handle)
     time.sleep(10)
     logger.info(f'default_exit: {sig_num}, {data}')
     sys.exit()

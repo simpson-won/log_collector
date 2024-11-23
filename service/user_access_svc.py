@@ -1,7 +1,7 @@
 """user_access 테이블에 대한 조회/입력 기능"""
 from log import logger
 from model.user_access import UserAccess, table_name
-from service import db_write_handle, db_read_handle
+from lib.mysql import db_write_handle, db_read_handle
 from lib.mysql import select_datas, insert_data
 
 

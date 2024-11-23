@@ -1,6 +1,7 @@
 """mysql utility library"""
 import pymysql
 from log import logger
+from config import db_port, db_user, db_passwd, db_write_host, db_read_host, db_db
 
 CHARSET = 'utf8'
 
@@ -8,11 +9,25 @@ CHARSET = 'utf8'
 DATA_COUNT = 0
 
 
-def db_init(db_host: str, db_user: str, db_passwd: str, db_db: str, db_port: int = 3306):
+def db_init(host: str, user: str, passwd: str, db: str, port: int = 3306):
     """db 연결 함수"""
-    conn = pymysql.connect(host=db_host, user=db_user, port=db_port,
-                           password=db_passwd, db=db_db, charset=CHARSET)
+    conn = pymysql.connect(host=host, user=user, port=port,
+                           password=passwd, db=db, charset=CHARSET)
     return conn
+
+
+db_write_handle = db_init(host=db_write_host,
+                          user=db_user,
+                          passwd=db_passwd,
+                          db=db_db,
+                          port=db_port)
+
+
+db_read_handle = db_init(host=db_read_host,
+                         user=db_user,
+                         passwd=db_passwd,
+                         db=db_db,
+                         port=db_port)
 
 
 def db_fint(conn):
@@ -31,6 +46,7 @@ def select_datas(conn, table: str = "", where: str = None, order: str = None) ->
         ex ) query : "select * from finance.stock_list;"
     """
     cur = conn.cursor()
+    conn.ping(reconnect=True)
     datas = []
     query = f'select * from {table}'
     if where is not None and len(where) > 6:
@@ -43,7 +59,6 @@ def select_datas(conn, table: str = "", where: str = None, order: str = None) ->
     for row in rows:
         datas.append(row)
     cur.close()
-    # logger.info(f'select_datas: rows={rows}')
     return datas
 
 
@@ -62,7 +77,6 @@ def insert_datas(conn, cursor=None, table="", values=None, auto_commit=True):
         cur = cursor
     for value in values:
         query = f'insert ignore into {table} values({str(value)})'
-        # logger.info(f'query={query}')
         cur.execute(query)
     if auto_commit:
         conn.commit()
@@ -76,6 +90,7 @@ def insert_data(conn, cursor=None, table="", value=None, auto_commit=True):
             cur = conn.cursor()
         else:
             cur = cursor
+        conn.ping(reconnect=True)
         query = f'insert ignore into {table} values({str(value)})'
         logger.info(f'query={query}')
         cur.execute(query)
