@@ -11,7 +11,7 @@ def log_archive(sig_num, data):
 
 def default_exit(sig_num, data):
     """default_exit"""
-    from log_collector_v2 import run_mode
+    from log_collector_v3 import run_mode
     import time
     if run_mode != "publisher":
         from lib.mysql import db_fint
