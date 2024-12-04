@@ -11,13 +11,15 @@ def log_archive(sig_num, data):
 
 def default_exit(sig_num, data):
     """default_exit"""
-    from log_collector_v2 import run_mode
+    from log_collector_v3 import run_mode
     import time
     if run_mode != "publisher":
         from lib.mysql import db_fint
-        from service import db_handle
-        if db_handle is not None:
-            db_fint(db_handle)
+        from lib.mysql import db_write_handle, db_read_handle
+        if db_write_handle is not None:
+            db_fint(db_write_handle)
+        if db_read_handle is not None:
+            db_fint(db_read_handle)
     time.sleep(10)
     logger.info(f'default_exit: {sig_num}, {data}')
     sys.exit()

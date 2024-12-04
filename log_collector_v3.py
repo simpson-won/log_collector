@@ -6,8 +6,6 @@ import signal
 from lib.pri_signal import sig_init
 from lib.pid import write_pid
 from lib.log_trace import trace_log
-from service import redis_client
-from service.redis_svc import queue_pop
 from lib.args import get_args
 from log import logger
 
@@ -93,10 +91,7 @@ if __name__ == "__main__":
         target_process = {"aws": aws_parse_process, "vms": vms_parse_process}
         write_pid(file_path=f"/var/run/log_collector_v2_sub_{pid}.pid")
         logger.info(f'main: log_path={mongodb_log_path}, run_mode={run_mode}')
-        if op_ver == 2:
-            queue_pop(logger=logger, handle=redis_client, process=target_process[target])
-        else:
-            print("*** Important ****")
-            print("You need to start using celery")
-            print("=> celery -A log_collector_v3_sub worker --concurrency 3 -l INFO")
-            print("Bye...")
+        print("*** Important ****")
+        print("You need to start using celery")
+        print("=> celery -A log_collector_v3_sub worker --concurrency 3 -l INFO")
+        print("Bye...")

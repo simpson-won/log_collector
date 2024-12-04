@@ -71,14 +71,10 @@ rs0 [direct: secondary] admin> db.runCommand({getParameter:1, logLevel:1})
 # 서비스 설치
 
 프로그램은 VENV와 서비스로 동작합니다. 따라서, venv 환경이 되어 있어야 하며, 프로그램 위치의 세 개의 service 파일을 서비스로 등록하여야 합니다.
-또한, 프로그램에 redis가 설치 되어 있어야 합니다.
+또한, 프로그램에 rabbitmq가 설치 되어 있어야 합니다.
 
-redis는 다음과 같이 설치 합니다.
-```bash
-apt install -y redis
-systemctl enable redis
-systemctl start redis
-```
+rabbitmq는 아래의 URL을 참조하여 설치 합니다.
+ * https://www.rabbitmq.com/docs/install-debian
 
 venv 환경은 다음과 같이 합니다.
 ```bash
@@ -94,18 +90,15 @@ pip install -r requirement
 ```bash
 cp /opt/log_collector_v2/log_collector_*.service /etc/systemd/system
 systemctl enable log_collector_pub
-systemctl enable log_collector_sub1
-systemctl enable log_collector_sub2
+systemctl enable log_collector_sub
 systemctl start log_collector_pub
-systemctl start log_collector_sub1
-systemctl start log_collector_sub2
+systemctl start log_collector_sub
 ```
 
 프로그램의 정지는 다음과 같이 하여 주십시요.
 ```bash
 systemctl stop log_collector_pub
-systemctl stop log_collector_sub1
-systemctl stop log_collector_sub2
+systemctl stop log_collector_sub
 ```
 
 # 로그 로테이션
@@ -181,20 +174,22 @@ db_user="monitoring"
 db_passwd="DB password"
 db_db="eimmo_monitoring_dev"
 charset="utf8"
+
+BROKER_ADDRESS='amqp://localhost:5672'
 ```
 
 # 로그 조회
 로그 조회는 인프라 매니저에서 가능합니다.
 주소는 다음과 같습니다.
 <p>
- http://eimmo-infra-manager.koreacentral.cloudapp.azure.com:8080/
+ <a href="http://eimmo-infra-manager.koreacentral.cloudapp.azure.com:8080/">Aimmo InfraManager</a>
 </p>
 <p style="text-align: center;">
-<img src="image/image_01.png" width=50%/>
+<img src="image/image_01.png" width=50% alt="image1"/>
 </p>
 <p style="text-align: center;">
-<img src="image/image_02.png" width=50%/>
+<img src="image/image_02.png" width=50% alt="image2"/>
 </p>
 <p style="text-align: center;">
-<img src="image/image_03.png" width=50%/>
+<img src="image/image_03.png" width=50% alt="image3"/>
 </p>
