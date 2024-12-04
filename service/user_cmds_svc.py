@@ -20,21 +20,14 @@ def insert_value(values: list, cursor=None,
                  database_name="", host="",
                  real_write=True):
     """insert single value to user_cmds"""
-    from lib.mysql import db_write_handle, db_read_handle, insert_data
-    from service.user_access_svc import select_user_by_ctx_db_client
+    from lib.mysql import db_write_handle, insert_data
     if len(values) != 6:
         return
     if cursor is None:
         t_cursor = db_write_handle.cursor()
     else:
         t_cursor = cursor
-    user = select_user_by_ctx_db_client(handle=db_read_handle,
-                                        client=values[0],
-                                        ctx=values[2])
-    if user == "Unknown":
-        user = select_user_by_ctx_db_client(handle=db_write_handle,
-                                            client=values[0],
-                                            ctx=values[2])
+    user = "Unknown"
     values.append(user)
     values.append(filter_str)
     values.append(database_name)
@@ -58,25 +51,15 @@ def insert_value_1(values: list, cursor=None,
                    database_name="", host="",
                    real_write=True):
     """insert value"""
-    from lib.mysql import db_write_handle, db_read_handle, insert_data
-    from service.user_access_svc import select_user_client_by_ctx_db_dbs
+    from lib.mysql import db_write_handle, insert_data
     if len(values) != 5:
         return
     if cursor is None:
         t_cursor = db_write_handle.cursor()
     else:
         t_cursor = cursor
-    user, client = select_user_client_by_ctx_db_dbs(handle=db_read_handle,
-                                                    ctx=values[1],
-                                                    database_name=database_name)
-    if user is None:
-        user, client = select_user_client_by_ctx_db_dbs(handle=db_write_handle,
-                                                        ctx=values[1],
-                                                        database_name=database_name)
-    if user is None:
-        user = "Unknown"
-    if client is None:
-        client = "Unknown"
+    user = "Unknown"
+    client = "Unknown"
     values.insert(0, client)
     values.append(user)
     values.append(filter_str)
