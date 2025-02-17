@@ -90,7 +90,7 @@ class UserCommand:
         if args is None:
             args = ""
         if isinstance(updated, str):
-            new_updated_at = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S.%fZ')
+            new_updated_at = datetime.strptime(updated, '%Y-%m-%dT%H:%M:%S.%f+09:00')
         else:
             new_updated_at = updated
         return UserCommand(

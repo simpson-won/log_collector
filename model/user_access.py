@@ -72,7 +72,7 @@ class UserAccess:
                db="", user="", database_name="dev", host="localhost"):
         # date, ctx, cmd, client, user, db,
         if isinstance(updated_at, str):
-            new_updated_at = datetime.strptime(updated_at, '%Y-%m-%dT%H:%M:%S.%fZ')
+            new_updated_at = datetime.strptime(updated_at, '%Y-%m-%dT%H:%M:%S.%f+09:00')
         else:
             new_updated_at = updated_at
         return UserAccess(

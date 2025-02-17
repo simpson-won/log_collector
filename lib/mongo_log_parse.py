@@ -3,6 +3,7 @@ import sys
 from service.user_access_svc import insert_value as insert_ua_value
 from service.user_cmds_svc import insert_value as insert_uc_value
 from service.user_cmds_svc import insert_value_1 as insert_uc_value_1
+from config import log_time_localize
 
 
 if sys.version_info[0] < 3:
