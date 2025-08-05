@@ -8,3 +8,4 @@ celery_app = Celery('log_tasks',
                     broker=BROKER_ADDRESS,
                     include=['lib.aws_logs',
                              'lib.mongo_logs'])
+celery_app.conf.task_soft_time_limit = 10
